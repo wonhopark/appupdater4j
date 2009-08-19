@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<rss version="2.0" xmlns:au="http://code.google.com/p/appupdater4j">
+    <channel>
+        <title>My Application update feed</title>
+        <lastBuildDate>Wed, 27 Jul 2009 00:30:30 -0700</lastBuildDate>
+        <link>http://code.google.com/p/appupdater4j</link>
+        <au:id>myappid</au:id>
+        <au:name>myappname</au:name>
+        <item>
+            <title>Version 0.0.4</title>
+            <pubDate>Tue, 19 Jul 2005 04:32:51 -0700</pubDate>
+            <link>http://code.google.com/p/appupdater4j</link>
+            <au:major>0</au:major>
+            <au:minor>0</au:minor>
+            <au:build>4</au:build>
+        </item>
+        <item>
+            <title>Version 0.0.5</title>
+            <pubDate>Tue, 19 Aug 2005 04:32:51 -0700</pubDate>
+            <link>http://code.google.com/p/appupdater4j</link>
+            <au:major>0</au:major>
+            <au:minor>0</au:minor>
+            <au:build>5</au:build>
+        </item>
+        <item>
+            <title>Version 0.0.5.1</title>
+            <pubDate>Tue, 22 Aug 2005 04:32:51 -0700</pubDate>
+            <link>http://code.google.com/p/appupdater4j</link>
+            <au:major>0</au:major>
+            <au:minor>0</au:minor>
+            <au:build>5</au:build>
+            <au:revision>1</au:revision>
+        </item>
+        <item>
+            <title>Version 1.0.0</title>
+            <pubDate>Tue, 14 Dec 2005 04:32:51 -0700</pubDate>
+            <link>http://code.google.com/p/appupdater4j</link>
+            <au:major>1</au:major>
+            <au:minor>0</au:minor>
+            <au:build>0</au:build>
+            <au:reboot>true</au:reboot>
+        </item>
+    </channel>
+</rss>
