@@ -13,6 +13,8 @@
             <au:major>0</au:major>
             <au:minor>0</au:minor>
             <au:build>4</au:build>
+            <au:description lang="fr">Version initiale</au:description>
+            <au:description lang="en">Initial version</au:description>
         </item>
         <item>
             <title>Version 0.0.5</title>
@@ -21,6 +23,8 @@
             <au:major>0</au:major>
             <au:minor>0</au:minor>
             <au:build>5</au:build>
+            <au:description lang="fr">Seconde version</au:description>
+            <au:description lang="en">Second version</au:description>
         </item>
         <item>
             <title>Version 0.0.5.1</title>
@@ -30,6 +34,8 @@
             <au:minor>0</au:minor>
             <au:build>5</au:build>
             <au:revision>1</au:revision>
+            <au:description lang="fr">Troisieme version</au:description>
+            <au:description lang="en">Third version</au:description>
         </item>
         <item>
             <title>Version 1.0.0</title>
@@ -39,6 +45,8 @@
             <au:minor>0</au:minor>
             <au:build>0</au:build>
             <au:reboot>true</au:reboot>
+            <au:description lang="fr">Version officielle</au:description>
+            <au:description lang="en">Official version</au:description>
         </item>
     </channel>
 </rss>
