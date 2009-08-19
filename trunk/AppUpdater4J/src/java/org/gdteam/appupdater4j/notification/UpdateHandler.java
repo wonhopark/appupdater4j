@@ -11,19 +11,19 @@ import org.gdteam.appupdater4j.notification.feed.RSSReader;
 
 
 //TODO: local data
-public class UpdateNotifier {
+public class UpdateHandler {
 
-    private String feedURL;
+    private URL feedURL;
     
     private Application parsedApplication = null;
 
-    public UpdateNotifier(String feedURL) {
+    public UpdateHandler(URL feedURL) {
         this.feedURL = feedURL;
     }
     
     public void parse() {
         try {
-            this.parsedApplication = RSSReader.getApplication(new URL(this.feedURL));
+            this.parsedApplication = RSSReader.getApplication(this.feedURL);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -47,7 +47,7 @@ public class UpdateNotifier {
         List<ApplicationVersion> versionToInstall = new ArrayList<ApplicationVersion>();
         
         for (ApplicationVersion applicationVersion : this.parsedApplication.getVersions()) {
-            if (applicationVersion.compareToStringVersion(currentVersion) < 0) {
+            if (applicationVersion.compareToStringVersion(currentVersion) > 0) {
                 versionToInstall.add(applicationVersion);
             }
         }
