@@ -38,7 +38,7 @@ public class RSSTest {
     
     
     @Test
-    public void basicTest() {
+    public void testBasic() {
         try {
             Application app = RSSReader.getApplication(this.getClass().getClassLoader().getResource("basictestrss.xml"));
             
@@ -100,6 +100,5 @@ public class RSSTest {
             e.printStackTrace();
             Assert.fail(e.getMessage());
         }
-        
     }
 }
