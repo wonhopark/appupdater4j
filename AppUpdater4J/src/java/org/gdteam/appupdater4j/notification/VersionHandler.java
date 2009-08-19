@@ -11,13 +11,13 @@ import org.gdteam.appupdater4j.notification.feed.RSSReader;
 
 
 //TODO: local data
-public class UpdateHandler {
+public class VersionHandler {
 
     private URL feedURL;
     
     private Application parsedApplication = null;
 
-    public UpdateHandler(URL feedURL) {
+    public VersionHandler(URL feedURL) {
         this.feedURL = feedURL;
     }
     
