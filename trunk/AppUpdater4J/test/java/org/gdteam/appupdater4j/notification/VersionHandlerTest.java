@@ -7,12 +7,12 @@ import junit.framework.Assert;
 import org.gdteam.appupdater4j.model.ApplicationVersion;
 import org.junit.Test;
 
-public class UpdateHandlerTest {
+public class VersionHandlerTest {
 
     @Test
     public void testBasic() {
         
-        UpdateHandler notifier = new UpdateHandler(this.getClass().getClassLoader().getResource("basictestrss.xml"));
+        VersionHandler notifier = new VersionHandler(this.getClass().getClassLoader().getResource("basictestrss.xml"));
         notifier.parse();
         
         Assert.assertTrue("Version list is not empty", notifier.getInstallVersionList("myappid", "1.0.1").isEmpty());
