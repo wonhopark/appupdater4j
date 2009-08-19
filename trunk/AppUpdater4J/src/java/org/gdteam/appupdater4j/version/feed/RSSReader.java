@@ -1,4 +1,4 @@
-package org.gdteam.appupdater4j.notification.feed;
+package org.gdteam.appupdater4j.version.feed;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
