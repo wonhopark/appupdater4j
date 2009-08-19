@@ -52,13 +52,14 @@ public class ApplicationVersionTest {
         
         Collections.sort(versions);
         
-        Assert.assertEquals(v1, versions.get(0));
-        Assert.assertEquals(v2, versions.get(1));
-        Assert.assertEquals(v3, versions.get(2));
-        Assert.assertEquals(v4, versions.get(3));
-        Assert.assertEquals(v5, versions.get(4));
         
-        //Check that v4 younger than 0.0.4 (from String)
-        Assert.assertTrue(v4.compareToStringVersion("0.0.4") < 0);
+        Assert.assertEquals(v5, versions.get(0));
+        Assert.assertEquals(v4, versions.get(1));
+        Assert.assertEquals(v3, versions.get(2));
+        Assert.assertEquals(v2, versions.get(3));
+        Assert.assertEquals(v1, versions.get(4));
+        
+        //Check that v4 older than 0.0.4 (from String)
+        Assert.assertTrue(v4.compareToStringVersion("0.0.4") > 0);
     }
 }

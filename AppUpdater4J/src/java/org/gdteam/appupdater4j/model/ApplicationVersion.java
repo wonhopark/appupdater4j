@@ -94,7 +94,7 @@ public class ApplicationVersion implements Comparable<ApplicationVersion> {
         }
         
         //Compare revision
-        return this.compareVersionItem(this.build, appversion.build);
+        return this.compareVersionItem(this.revision, appversion.revision);
     }
     
     private int compareVersionItem(String item1, String item2) {
@@ -115,7 +115,7 @@ public class ApplicationVersion implements Comparable<ApplicationVersion> {
                 //Do nothing
             }
             
-            return 0 - i1.compareTo(i2);
+            return i1.compareTo(i2);
         }
     }
     
