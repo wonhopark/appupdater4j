@@ -1,4 +1,4 @@
-package org.gdteam.appupdater4j.notification;
+package org.gdteam.appupdater4j.version;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.gdteam.appupdater4j.model.Application;
 import org.gdteam.appupdater4j.model.ApplicationVersion;
-import org.gdteam.appupdater4j.notification.feed.RSSReader;
+import org.gdteam.appupdater4j.version.feed.RSSReader;
 
 
 //TODO: local data

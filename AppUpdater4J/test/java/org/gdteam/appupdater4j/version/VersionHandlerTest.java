@@ -1,10 +1,11 @@
-package org.gdteam.appupdater4j.notification;
+package org.gdteam.appupdater4j.version;
 
 import java.util.ArrayList;
 
 import junit.framework.Assert;
 
 import org.gdteam.appupdater4j.model.ApplicationVersion;
+import org.gdteam.appupdater4j.version.VersionHandler;
 import org.junit.Test;
 
 public class VersionHandlerTest {
