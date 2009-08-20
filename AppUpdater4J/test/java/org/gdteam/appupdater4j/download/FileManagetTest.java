@@ -3,11 +3,13 @@ package org.gdteam.appupdater4j.download;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import junit.framework.Assert;
 
 import org.gdteam.appupdater4j.FileUtil;
+import org.gdteam.appupdater4j.model.UpdateFile;
 import org.gdteam.appupdater4j.model.Version;
 import org.junit.Test;
 
@@ -25,17 +27,20 @@ public class FileManagetTest {
             out = new FileOutputStream(new File(fileManager.getFileStore(), fileName));
             FileUtil.copy(this.getClass().getClassLoader().getResourceAsStream(fileName), out, 1024);
             
-            Version version = new Version();
-            version.setMajor("0");
-            version.setMinor("0");
-            version.setBuild("5");
-            version.setRevision("1");
+            Version badCurrent = Version.createVersion("0.0.4");
+            Version goodCurrent = Version.createVersion("0.0.5");
             
-            Map<Version, File> downloadedFiles = fileManager.getDownloadedFiles();
+            List<UpdateFile> downloadedFiles = fileManager.getDownloadedFiles(badCurrent);
+            
+            Assert.assertEquals(0, downloadedFiles.size());
+            
+            downloadedFiles = fileManager.getDownloadedFiles(goodCurrent);
+            
             Assert.assertEquals(1, downloadedFiles.size());
-            Assert.assertEquals(version, downloadedFiles.keySet().toArray()[0]);
             
-            Assert.assertNotNull("Cannot find file for version :" + version, downloadedFiles.get(version));
+            Version updateVersion = Version.createVersion("0.0.5.1");
+            
+            Assert.assertEquals(updateVersion, downloadedFiles.get(0).getUpdateVersion());
             
         } catch (IOException e) {
             Assert.fail(e.getMessage());

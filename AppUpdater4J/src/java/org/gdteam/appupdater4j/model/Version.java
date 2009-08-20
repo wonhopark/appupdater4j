@@ -93,6 +93,19 @@ public class Version implements Comparable<Version>{
     }
     
     public int compareToStringVersion(String stringVersion) {
+        return this.compareTo(Version.createVersion(stringVersion));
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        return this.compareTo((Version) obj) == 0;
+    }
+    @Override
+    public int hashCode() {
+        return this.toString().hashCode();
+    }
+    
+    public static Version createVersion(String stringVersion) {
         String[] splittedVersion = stringVersion.split("\\.");
         
         Version version = new Version();
@@ -112,16 +125,7 @@ public class Version implements Comparable<Version>{
             version.setRevision(splittedVersion[3]);
         }
         
-        return this.compareTo(version);
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-        return this.compareTo((Version) obj) == 0;
-    }
-    @Override
-    public int hashCode() {
-        return this.toString().hashCode();
+        return version;
     }
     
     

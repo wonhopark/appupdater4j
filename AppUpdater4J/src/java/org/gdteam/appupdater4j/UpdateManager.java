@@ -1,12 +1,17 @@
 package org.gdteam.appupdater4j;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
+import org.gdteam.appupdater4j.download.FileManager;
 import org.gdteam.appupdater4j.model.ApplicationVersion;
+import org.gdteam.appupdater4j.model.UpdateFile;
+import org.gdteam.appupdater4j.model.Version;
 import org.gdteam.appupdater4j.version.VersionHandler;
 
 public class UpdateManager {
@@ -17,6 +22,13 @@ public class UpdateManager {
     private String currentVersion;
     private VersionHandler versionHandler;
     
+    private FileManager tempFileManager;
+    
+    /**
+     * If update files are in this store, they will be automatically installed
+     */
+    private FileManager autoFileManager;
+    
     private List<ApplicationVersion> versionToInstallList;
     private Properties properties;
 
@@ -25,6 +37,8 @@ public class UpdateManager {
         this.currentVersion = currentVersion;
         
         this.versionHandler = new VersionHandler(feedURL);
+        
+        this.autoFileManager = new FileManager(new File(System.getProperty("user.dir")));
 
         this.loadProperties();
     }
@@ -53,5 +67,13 @@ public class UpdateManager {
     
     public boolean needUpdate() {
         return !this.versionToInstallList.isEmpty();
+    }
+    
+    /**
+     * Get files which must be installed sorted by version()
+     * @return
+     */
+    public List<UpdateFile> getFilesToAutomaticallyInstall() {
+        return this.autoFileManager.getDownloadedFiles(Version.createVersion(this.currentVersion));
     }
 }
