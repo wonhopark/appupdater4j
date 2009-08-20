@@ -1,11 +1,17 @@
 package org.gdteam.appupdater4j;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public class FileUtil {
 
@@ -36,4 +42,59 @@ public class FileUtil {
             out.write(b, 0, l);
         }
     }
+    
+    public static final void unzipFile(File file, String dir) throws Exception{
+        ZipFile zipFile = null;
+        try {
+            zipFile = new ZipFile(file);
+            Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zipFile.entries();
+
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = (ZipEntry) entries.nextElement();
+                if (entry.isDirectory()) {
+                    // Do nothing. Directory will be created after
+                } else {
+                    File fileToExtract = new File(dir + entry.getName());
+                    File parent = fileToExtract.getParentFile();
+
+                    if (parent != null) {
+                        parent.mkdirs();
+                    }
+                    
+                    InputStream is = null;
+                    OutputStream out = null;
+                    
+                    try {
+                        is = zipFile.getInputStream(entry);
+                        out = new BufferedOutputStream(new FileOutputStream(fileToExtract));
+                        
+                        byte[] buffer = new byte[1024];
+                        int len;
+
+                        while ((len = is.read(buffer)) >= 0) {
+                            out.write(buffer, 0, len);
+                        }
+                    } finally {
+                        if (is != null){
+                            is.close();
+                        }
+                        if (out != null){
+                            out.close();
+                        }
+                    }
+
+                }
+            }
+        
+        } finally {
+            if (zipFile != null){
+                try {
+                    zipFile.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } 
+        }
+    }
+
 }

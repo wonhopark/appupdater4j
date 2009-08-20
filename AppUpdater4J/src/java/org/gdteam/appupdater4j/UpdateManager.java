@@ -74,6 +74,6 @@ public class UpdateManager {
      * @return
      */
     public List<UpdateFile> getFilesToAutomaticallyInstall() {
-        return this.autoFileManager.getDownloadedFiles(Version.createVersion(this.currentVersion));
+        return this.autoFileManager.getDownloadedFiles(this.applicationID, Version.createVersion(this.currentVersion));
     }
 }
