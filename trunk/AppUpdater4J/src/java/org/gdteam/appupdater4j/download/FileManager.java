@@ -3,14 +3,19 @@ package org.gdteam.appupdater4j.download;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.gdteam.appupdater4j.FileUtil;
+import org.gdteam.appupdater4j.model.UpdateFile;
 import org.gdteam.appupdater4j.model.Version;
 
 public class FileManager {
@@ -30,14 +35,14 @@ public class FileManager {
         this.fileStore = fileStore;        
     }
     
-    private Version getFileVersion(String fileName) {
+    private UpdateFile getUpdateFile(String fileName) {
         String md5 = null;
         String md5ToCompare = null;
-        Version ret = new Version();
+        UpdateFile updateFile = new UpdateFile(fileStore, fileName);
         
         ZipFile zipFile = null;
         try {
-            zipFile = new ZipFile(new File(fileStore, fileName));
+            zipFile = new ZipFile(updateFile);
             Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zipFile.entries();
             
             while (entries.hasMoreElements()) {
@@ -49,10 +54,17 @@ public class FileManager {
                         Properties updateProperties = new Properties();
                         updateProperties.load(zipFile.getInputStream(entry));
                         
-                        ret.setMajor(updateProperties.getProperty("version.major"));
-                        ret.setMinor(updateProperties.getProperty("version.minor"));
-                        ret.setBuild(updateProperties.getProperty("version.build"));
-                        ret.setRevision(updateProperties.getProperty("version.revision"));
+                        updateFile.getUpdateVersion().setMajor(updateProperties.getProperty("version.major"));
+                        updateFile.getUpdateVersion().setMinor(updateProperties.getProperty("version.minor"));
+                        updateFile.getUpdateVersion().setBuild(updateProperties.getProperty("version.build"));
+                        updateFile.getUpdateVersion().setRevision(updateProperties.getProperty("version.revision"));
+                        
+                        Version previous = Version.createVersion(updateProperties.getProperty("previous.version"));
+                        
+                        updateFile.getPreviousVersion().setMajor(previous.getMajor());
+                        updateFile.getPreviousVersion().setMinor(previous.getMinor());
+                        updateFile.getPreviousVersion().setBuild(previous.getBuild());
+                        updateFile.getPreviousVersion().setRevision(previous.getRevision());
                         
                         md5ToCompare = FileUtil.getMD5(zipFile.getInputStream(entry));
                     }
@@ -60,7 +72,7 @@ public class FileManager {
             }
             
             if (md5.equals(md5ToCompare)) {
-                return ret;
+                return updateFile;
             }
             
             return null;
@@ -83,15 +95,42 @@ public class FileManager {
         return fileStore;
     }
 
-    public Map<Version, File> getDownloadedFiles() {
-        Map<Version, File> ret = new HashMap<Version, File>();
+    /**
+     * Get valid downloaded files which can be installed (sorted by version)
+     * @param currentVersion
+     * @return
+     */
+    public List<UpdateFile> getDownloadedFiles(Version currentVersion) {
+        List<UpdateFile> found = new ArrayList<UpdateFile>();
         
         for (File file : fileStore.listFiles(UPDATE_FILE_FILTER)) {
-            Version version = this.getFileVersion(file.getName());
-            if (version != null) {
-                ret.put(version, file);
+            UpdateFile updateFile = this.getUpdateFile(file.getName());
+            if (updateFile != null) {
+                found.add(updateFile);
             }
         }
+        
+        //Sort found files by version
+        Collections.sort(found, new Comparator<UpdateFile>(){
+
+            public int compare(UpdateFile o1, UpdateFile o2) {
+                return o1.getUpdateVersion().compareTo(o2.getUpdateVersion());
+            }
+            
+        });
+        
+        //Check if file suite is correct
+        List<UpdateFile> ret = new ArrayList<UpdateFile>();
+        Version previousVersion = currentVersion;
+        for (UpdateFile updateFile : found) {
+            if (updateFile.getPreviousVersion().equals(previousVersion)) {
+                ret.add(updateFile);
+                previousVersion = updateFile.getUpdateVersion();
+            } else {
+                break;
+            }
+        }
+        
         return ret;
     }
     
