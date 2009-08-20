@@ -8,6 +8,7 @@ import java.util.Locale;
 
 import org.gdteam.appupdater4j.model.Application;
 import org.gdteam.appupdater4j.model.ApplicationVersion;
+import org.gdteam.appupdater4j.model.Version;
 import org.jdom.Element;
 
 import com.sun.syndication.feed.synd.SyndEntry;
@@ -55,29 +56,29 @@ public class RSSReader {
         
         for (SyndEntry entry : ((List<SyndEntry>) feed.getEntries())) {
             
-            ApplicationVersion version = new ApplicationVersion();
-            version.setName(entry.getTitle());
-            version.setPublicationDate(entry.getPublishedDate());
-            version.setUpdateURL(entry.getLink());
+            ApplicationVersion appVersion = new ApplicationVersion();
+            appVersion.setName(entry.getTitle());
+            appVersion.setPublicationDate(entry.getPublishedDate());
+            appVersion.setUpdateURL(entry.getLink());
             
             List<Element> itemForeignMarkup = (List<Element>) entry.getForeignMarkup();
             for (Element element : itemForeignMarkup) {
                 if (element.getQualifiedName().equals(VERSION_MAJOR)) {
-                    version.setMajor(element.getValue());
+                    appVersion.getVersion().setMajor(element.getValue());
                 } else if (element.getQualifiedName().equals(VERSION_MINOR)) {
-                    version.setMinor(element.getValue());
+                    appVersion.getVersion().setMinor(element.getValue());
                 } else if (element.getQualifiedName().equals(VERSION_BUILD)) {
-                    version.setBuild(element.getValue());
+                    appVersion.getVersion().setBuild(element.getValue());
                 } else if (element.getQualifiedName().equals(VERSION_REVISION)) {
-                    version.setRevision(element.getValue());
+                    appVersion.getVersion().setRevision(element.getValue());
                 } else if (element.getQualifiedName().equals(VERSION_REBOOT)) {
-                    version.setNeedReboot(Boolean.valueOf(element.getValue()));
+                    appVersion.setNeedReboot(Boolean.valueOf(element.getValue()));
                 } else if (element.getQualifiedName().equals(VERSION_DESCRIPTION)) {
-                    version.putDescription(new Locale(element.getAttributeValue("lang")), element.getValue());
+                    appVersion.putDescription(new Locale(element.getAttributeValue("lang")), element.getValue());
                 }
             }
             
-            ret.addVersion(version);
+            ret.addVersion(appVersion);
             
         }
         

@@ -17,7 +17,7 @@ public class FileDownloadTest {
     @Test
     public void testDownload() {
         
-        File dest = new File(System.getProperty("java.tmp.dir"), "downloadtest.xml");
+        File dest = new File(System.getProperty("java.io.tmpdir"), "downloadtest.xml");
         dest.deleteOnExit();
         
         try {

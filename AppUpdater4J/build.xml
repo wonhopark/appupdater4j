@@ -44,6 +44,11 @@
 		<javac destdir="build/classes" classpathref="compile.path" encoding="UTF-8" source="1.5" target="1.5" debug="true">
 		    <src path="src/java"/>
 	    </javac>
+		<copy todir="build/classes">
+			<fileset dir="src/conf">
+				<exclude name="**/.svn/**"/>
+			</fileset>
+		</copy>
 	</target>
 	
 	<target name="compile-test" depends="build">
@@ -54,6 +59,11 @@
 			</classpath>
             <src path="test/java"/>
         </javac>
+		<copy todir="build/test/classes">
+            <fileset dir="test/conf">
+                <exclude name="**/.svn/**"/>
+            </fileset>
+        </copy>
 	</target>
 	
 	<target name="build-test" depends="compile-test">

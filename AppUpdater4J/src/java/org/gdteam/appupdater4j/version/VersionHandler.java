@@ -47,7 +47,7 @@ public class VersionHandler {
         List<ApplicationVersion> versionToInstall = new ArrayList<ApplicationVersion>();
         
         for (ApplicationVersion applicationVersion : this.parsedApplication.getVersions()) {
-            if (applicationVersion.compareToStringVersion(currentVersion) > 0) {
+            if (applicationVersion.getVersion().compareToStringVersion(currentVersion) > 0) {
                 versionToInstall.add(applicationVersion);
             }
         }
