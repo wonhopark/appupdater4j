@@ -24,6 +24,10 @@
         </path>
 	</target>
 	
+	<target name="clean">
+		<delete dir="build"/>
+	</target>
+	
     <target name="prepare">
         <delete dir="build"/>
     	<mkdir dir="build" />
