@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -47,6 +45,7 @@ public class FileManager {
             
             while (entries.hasMoreElements()) {
                 ZipEntry entry = (ZipEntry) entries.nextElement();
+                System.out.println(entry.getName());
                 if (!entry.isDirectory()) {
                     if (entry.getName().endsWith(".md5")) {
                         md5 = entry.getName().substring(0, entry.getName().indexOf(".md5"));

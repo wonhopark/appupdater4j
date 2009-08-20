@@ -2,10 +2,10 @@ package org.gdteam.appupdater4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.gdteam.appupdater4j.download.FileManager;
@@ -30,35 +30,36 @@ public class UpdateManager {
     private FileManager autoFileManager;
     
     private List<ApplicationVersion> versionToInstallList;
-    private Properties properties;
 
-    public UpdateManager(String applicationID, String currentVersion, URL feedURL) {
-        this.applicationID = applicationID;
-        this.currentVersion = currentVersion;
-        
-        this.versionHandler = new VersionHandler(feedURL);
-        
-        this.autoFileManager = new FileManager(new File(System.getProperty("user.dir")));
-
-        this.loadProperties();
-    }
-    
-    private void loadProperties() {
-        //First get properties from classpath
+    /**
+     * Configure update manager
+     * @param properties
+     */
+    public void configure(Properties propertiesParam) {
+      //First get properties from classpath
+        Properties props = new Properties();
         try {
-            this.properties.load(this.getClass().getClassLoader().getResourceAsStream("updatemanager.cfg.properties"));
+            props.load(this.getClass().getClassLoader().getResourceAsStream("appupdater4j.cfg.properties"));
         } catch (IOException e) {
             e.printStackTrace();
         }
         
-        //Second get system.properties
-        Iterator systemKeySet = System.getProperties().keySet().iterator();
-        while (systemKeySet.hasNext()) {
-            Object key = (Object) systemKeySet.next();
-            if (key instanceof String && ((String) key).startsWith(PROPERTY_PREFIX)) {
-                this.properties.put(key, System.getProperty((String) key));
-            }
+        //Override properties
+        Iterator argKeySet = propertiesParam.keySet().iterator();
+        while (argKeySet.hasNext()) {
+            Object key = (Object) argKeySet.next();
+            props.put(key, System.getProperty((String) key));
         }
+        
+        this.applicationID = props.getProperty("application.id");
+        this.currentVersion = props.getProperty("application.version");
+        try {
+            this.versionHandler = new VersionHandler(new URL(props.getProperty("feed.url")));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        
+        this.autoFileManager = new FileManager(new File(System.getProperty("user.dir")));
     }
     
     public void performCheckForUpdate() {
