@@ -39,7 +39,7 @@ public class UpdateManager {
       //First get properties from classpath
         Properties props = new Properties();
         try {
-            props.load(this.getClass().getClassLoader().getResourceAsStream("appupdater4j.cfg.properties"));
+            props.load(this.getClass().getClassLoader().getResourceAsStream("updatemanager.cfg.properties"));
         } catch (IOException e) {
             e.printStackTrace();
         }

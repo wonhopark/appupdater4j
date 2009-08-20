@@ -1,10 +1,10 @@
 package org.gdteam.appupdater4j.wrapper;
 
 import java.io.File;
-import java.net.URISyntaxException;
 
 import junit.framework.Assert;
 
+import org.gdteam.appupdater4j.TestUtil;
 import org.junit.Test;
 
 public class ApplicationLauncherTest {
@@ -17,8 +17,11 @@ public class ApplicationLauncherTest {
         
         File jar = null;
         try {
-            jar = new File(this.getClass().getClassLoader().getResource("testwrapper-main.jar").toURI());
-        } catch (URISyntaxException e) {
+            File testwrapperMain = TestUtil.extractInJarFile("testwrapper-main.jar", true);
+            File testwrapperWriter = TestUtil.extractInJarFile("testwrapper-writer.jar", true);
+            jar = testwrapperMain;
+            
+        } catch (Exception e) {
             Assert.fail(e.getMessage());
         }
         

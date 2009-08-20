@@ -4,6 +4,7 @@ import java.io.File;
 
 import junit.framework.Assert;
 
+import org.gdteam.appupdater4j.TestUtil;
 import org.gdteam.appupdater4j.model.UpdateFile;
 import org.junit.Test;
 
@@ -12,10 +13,12 @@ public class InstallTest {
     @Test
     public void testFirst() {
         try {
-            UpdateFile file = new UpdateFile(this.getClass().getClassLoader().getResource("ant-test-first.zip").toURI());
+            
+            UpdateFile file = new UpdateFile(TestUtil.extractInJarFile("ant-test-first.zip").toURI());
             
             InstallationHelper installHelper = new InstallationHelper();
-            installHelper.installUpdate(file, new InstallationListener() {
+            installHelper.installUpdate(file);
+            installHelper.addInstallationListener(new InstallationListener() {
                 
                 private File basedir;
     
@@ -46,10 +49,11 @@ public class InstallTest {
     @Test
     public void testSecond() {
         try {
-            UpdateFile file = new UpdateFile(this.getClass().getClassLoader().getResource("ant-test-second.zip").toURI());
+            UpdateFile file = new UpdateFile(TestUtil.extractInJarFile("ant-test-second.zip").toURI());
             
             InstallationHelper installHelper = new InstallationHelper();
-            installHelper.installUpdate(file, new InstallationListener() {
+            installHelper.installUpdate(file);
+            installHelper.addInstallationListener(new InstallationListener() {
                 
                 private File basedir;
     

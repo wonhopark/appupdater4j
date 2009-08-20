@@ -45,7 +45,6 @@ public class FileManager {
             
             while (entries.hasMoreElements()) {
                 ZipEntry entry = (ZipEntry) entries.nextElement();
-                System.out.println(entry.getName());
                 if (!entry.isDirectory()) {
                     if (entry.getName().endsWith(".md5")) {
                         md5 = entry.getName().substring(0, entry.getName().indexOf(".md5"));
