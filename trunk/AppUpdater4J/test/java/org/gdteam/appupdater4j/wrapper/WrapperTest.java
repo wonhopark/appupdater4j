@@ -6,6 +6,7 @@ import java.net.URLClassLoader;
 
 import junit.framework.Assert;
 
+import org.gdteam.appupdater4j.TestUtil;
 import org.junit.Test;
 
 public class WrapperTest {
@@ -16,17 +17,19 @@ public class WrapperTest {
         File testFile = new File(System.getProperty("java.io.tmpdir"), "test_" + System.currentTimeMillis());
         testFile.deleteOnExit();
         
-        URL[] libURLs = {this.getClass().getClassLoader().getResource("testwrapper-main.jar"), this.getClass().getClassLoader().getResource("testwrapper-writer.jar")};
-        URLClassLoader classloader = new URLClassLoader(libURLs);
-        
-        String[] args = {testFile.getPath()};
-        
-        Wrapper wrapper = new Wrapper(classloader, "org.gdteam.appupdater4j.testwrapper.Main", args);
-        
-        wrapper.start();
         try {
+        
+            URL[] libURLs = {TestUtil.extractInJarFile("testwrapper-main.jar").toURL(), TestUtil.extractInJarFile("testwrapper-writer.jar").toURL()};
+            URLClassLoader classloader = new URLClassLoader(libURLs);
+            
+            
+            String[] args = {testFile.getPath()};
+            
+            Wrapper wrapper = new Wrapper(classloader, "org.gdteam.appupdater4j.testwrapper.Main", args);
+            
+            wrapper.start();
             wrapper.join();
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             Assert.fail(e.getMessage());
         }
         

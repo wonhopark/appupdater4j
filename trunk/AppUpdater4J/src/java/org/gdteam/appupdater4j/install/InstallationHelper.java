@@ -13,22 +13,20 @@ import org.gdteam.appupdater4j.model.UpdateFile;
 
 public class InstallationHelper {
 
-    private InstallationListener listener;
-
+    private List<InstallationListener> listeners = new ArrayList<InstallationListener>();
+    
     /**
      * Install update from zip file
      * @param zip
      * @param listener
      * @throws UpdateException
      */
-    public void installUpdate(UpdateFile zip, InstallationListener listener) throws Exception {
-        
-        this.listener = listener;
+    public void installUpdate(UpdateFile zip) throws Exception {
         
         String dirName = zip.getName().split(".zip")[0];
         StringBuilder dir = new StringBuilder(System.getProperty("java.io.tmpdir")).append("/gdteam/").append(dirName).append("/");
         
-        if (listener != null){
+        for (InstallationListener listener : listeners) {
             listener.installationStarted(dir.toString());
         }
 
@@ -42,10 +40,10 @@ public class InstallationHelper {
         
         this.runAntTargets(dir.toString(), properties);
         
-        
-        if (listener != null){
+        for (InstallationListener listener : listeners) {
             listener.installationEnded();
         }
+        
     }
     
     private void runAntTargets(String basedir, Properties properties) {
@@ -78,9 +76,17 @@ public class InstallationHelper {
             }
         
         } catch (Exception e) {
-            if (listener != null){
+            for (InstallationListener listener : listeners) {
                 listener.installationFailed(e);
             }
         }
+    }
+
+    public boolean addInstallationListener(InstallationListener o) {
+        return listeners.add(o);
+    }
+
+    public boolean removeInstallationListener(InstallationListener o) {
+        return listeners.remove(o);
     }
 }

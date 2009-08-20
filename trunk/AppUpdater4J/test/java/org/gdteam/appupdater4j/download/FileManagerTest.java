@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import junit.framework.Assert;
 
@@ -13,7 +12,7 @@ import org.gdteam.appupdater4j.model.UpdateFile;
 import org.gdteam.appupdater4j.model.Version;
 import org.junit.Test;
 
-public class FileManagetTest {
+public class FileManagerTest {
 
     @Test
     public void testGetDownloadedFiles() {
