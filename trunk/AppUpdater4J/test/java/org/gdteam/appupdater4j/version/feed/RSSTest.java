@@ -54,10 +54,10 @@ public class RSSTest {
             Assert.assertEquals("Version 0.0.4", firstVersion.getName());
             Assert.assertEquals(new Date("19 Jul 2005 04:32:51 -0700").toString(), firstVersion.getPublicationDate().toString());
             Assert.assertEquals("http://code.google.com/p/appupdater4j", firstVersion.getUpdateURL());
-            Assert.assertEquals("0", firstVersion.getMajor());
-            Assert.assertEquals("0", firstVersion.getMinor());
-            Assert.assertEquals("4", firstVersion.getBuild());
-            Assert.assertNull(firstVersion.getRevision());
+            Assert.assertEquals("0", firstVersion.getVersion().getMajor());
+            Assert.assertEquals("0", firstVersion.getVersion().getMinor());
+            Assert.assertEquals("4", firstVersion.getVersion().getBuild());
+            Assert.assertNull(firstVersion.getVersion().getRevision());
             Assert.assertEquals("Version initiale", firstVersion.getDescription(fr));
             Assert.assertEquals("Initial version", firstVersion.getDescription(en));
             
@@ -66,10 +66,10 @@ public class RSSTest {
             Assert.assertEquals("Version 0.0.5", secondVersion.getName());
             Assert.assertEquals(new Date("19 Aug 2005 04:32:51 -0700").toString(), secondVersion.getPublicationDate().toString());
             Assert.assertEquals("http://code.google.com/p/appupdater4j", secondVersion.getUpdateURL());
-            Assert.assertEquals("0", secondVersion.getMajor());
-            Assert.assertEquals("0", secondVersion.getMinor());
-            Assert.assertEquals("5", secondVersion.getBuild());
-            Assert.assertNull(secondVersion.getRevision());
+            Assert.assertEquals("0", secondVersion.getVersion().getMajor());
+            Assert.assertEquals("0", secondVersion.getVersion().getMinor());
+            Assert.assertEquals("5", secondVersion.getVersion().getBuild());
+            Assert.assertNull(secondVersion.getVersion().getRevision());
             Assert.assertEquals("Seconde version", secondVersion.getDescription(fr));
             Assert.assertEquals("Second version", secondVersion.getDescription(en));
             
@@ -78,10 +78,10 @@ public class RSSTest {
             Assert.assertEquals("Version 0.0.5.1", thirdVersion.getName());
             Assert.assertEquals(new Date("22 Aug 2005 04:32:51 -0700").toString(), thirdVersion.getPublicationDate().toString());
             Assert.assertEquals("http://code.google.com/p/appupdater4j", thirdVersion.getUpdateURL());
-            Assert.assertEquals("0", thirdVersion.getMajor());
-            Assert.assertEquals("0", thirdVersion.getMinor());
-            Assert.assertEquals("5", thirdVersion.getBuild());
-            Assert.assertEquals("1", thirdVersion.getRevision());
+            Assert.assertEquals("0", thirdVersion.getVersion().getMajor());
+            Assert.assertEquals("0", thirdVersion.getVersion().getMinor());
+            Assert.assertEquals("5", thirdVersion.getVersion().getBuild());
+            Assert.assertEquals("1", thirdVersion.getVersion().getRevision());
             Assert.assertEquals("Troisieme version", thirdVersion.getDescription(fr));
             Assert.assertEquals("Third version", thirdVersion.getDescription(en));
             
@@ -90,10 +90,10 @@ public class RSSTest {
             Assert.assertEquals("Version 1.0.0", officialVersion.getName());
             Assert.assertEquals(new Date("14 Dec 2005 04:32:51 -0700").toString(), officialVersion.getPublicationDate().toString());
             Assert.assertEquals("http://code.google.com/p/appupdater4j", officialVersion.getUpdateURL());
-            Assert.assertEquals("1", officialVersion.getMajor());
-            Assert.assertEquals("0", officialVersion.getMinor());
-            Assert.assertEquals("0", officialVersion.getBuild());
-            Assert.assertNull(officialVersion.getRevision());
+            Assert.assertEquals("1", officialVersion.getVersion().getMajor());
+            Assert.assertEquals("0", officialVersion.getVersion().getMinor());
+            Assert.assertEquals("0", officialVersion.getVersion().getBuild());
+            Assert.assertNull(officialVersion.getVersion().getRevision());
             Assert.assertEquals("Version officielle", officialVersion.getDescription(fr));
             Assert.assertEquals("Official version", officialVersion.getDescription(en));
             

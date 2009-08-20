@@ -14,34 +14,34 @@ public class ApplicationVersionTest {
         
         ApplicationVersion v1 = new ApplicationVersion();
         v1.setName("v1 : 1.0.0");
-        v1.setMajor("1");
-        v1.setMinor("0");
-        v1.setBuild("0");
+        v1.getVersion().setMajor("1");
+        v1.getVersion().setMinor("0");
+        v1.getVersion().setBuild("0");
         
         ApplicationVersion v2 = new ApplicationVersion();
         v1.setName("v2 : 0.2.0");
-        v2.setMajor("0");
-        v2.setMinor("2");
-        v2.setBuild("0");
+        v2.getVersion().setMajor("0");
+        v2.getVersion().setMinor("2");
+        v2.getVersion().setBuild("0");
         
         ApplicationVersion v3 = new ApplicationVersion();
         v3.setName("v3 : 0.0.5.1");
-        v3.setMajor("0");
-        v3.setMinor("0");
-        v3.setBuild("5");
-        v3.setRevision("1");
+        v3.getVersion().setMajor("0");
+        v3.getVersion().setMinor("0");
+        v3.getVersion().setBuild("5");
+        v3.getVersion().setRevision("1");
         
         ApplicationVersion v4 = new ApplicationVersion();
         v4.setName("v4 : 0.0.5");
-        v4.setMajor("0");
-        v4.setMinor("0");
-        v4.setBuild("5");
+        v4.getVersion().setMajor("0");
+        v4.getVersion().setMinor("0");
+        v4.getVersion().setBuild("5");
         
         ApplicationVersion v5 = new ApplicationVersion();
         v5.setName("v5 : 0.0.4");
-        v5.setMajor("0");
-        v5.setMinor("0");
-        v5.setBuild("4");
+        v5.getVersion().setMajor("0");
+        v5.getVersion().setMinor("0");
+        v5.getVersion().setBuild("4");
         
         ArrayList<ApplicationVersion> versions = new ArrayList<ApplicationVersion>();
         versions.add(v2);
@@ -60,6 +60,6 @@ public class ApplicationVersionTest {
         Assert.assertEquals(v1, versions.get(4));
         
         //Check that v4 older than 0.0.4 (from String)
-        Assert.assertTrue(v4.compareToStringVersion("0.0.4") > 0);
+        Assert.assertTrue(v4.getVersion().compareToStringVersion("0.0.4") > 0);
     }
 }
