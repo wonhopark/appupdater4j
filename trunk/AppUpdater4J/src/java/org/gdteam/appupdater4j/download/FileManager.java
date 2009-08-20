@@ -54,6 +54,8 @@ public class FileManager {
                         Properties updateProperties = new Properties();
                         updateProperties.load(zipFile.getInputStream(entry));
                         
+                        updateFile.setApplicationID(updateProperties.getProperty("product"));
+                        
                         updateFile.getUpdateVersion().setMajor(updateProperties.getProperty("version.major"));
                         updateFile.getUpdateVersion().setMinor(updateProperties.getProperty("version.minor"));
                         updateFile.getUpdateVersion().setBuild(updateProperties.getProperty("version.build"));
@@ -97,15 +99,16 @@ public class FileManager {
 
     /**
      * Get valid downloaded files which can be installed (sorted by version)
+     * @param applicationID
      * @param currentVersion
      * @return
      */
-    public List<UpdateFile> getDownloadedFiles(Version currentVersion) {
+    public List<UpdateFile> getDownloadedFiles(String applicationID, Version currentVersion) {
         List<UpdateFile> found = new ArrayList<UpdateFile>();
         
         for (File file : fileStore.listFiles(UPDATE_FILE_FILTER)) {
             UpdateFile updateFile = this.getUpdateFile(file.getName());
-            if (updateFile != null) {
+            if (updateFile != null && updateFile.getApplicationID().equals(applicationID)) {
                 found.add(updateFile);
             }
         }

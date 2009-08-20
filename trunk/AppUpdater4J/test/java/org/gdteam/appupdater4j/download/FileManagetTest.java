@@ -30,11 +30,15 @@ public class FileManagetTest {
             Version badCurrent = Version.createVersion("0.0.4");
             Version goodCurrent = Version.createVersion("0.0.5");
             
-            List<UpdateFile> downloadedFiles = fileManager.getDownloadedFiles(badCurrent);
+            List<UpdateFile> downloadedFiles = fileManager.getDownloadedFiles("myappid", badCurrent);
             
             Assert.assertEquals(0, downloadedFiles.size());
             
-            downloadedFiles = fileManager.getDownloadedFiles(goodCurrent);
+            downloadedFiles = fileManager.getDownloadedFiles("myappidbad", goodCurrent);
+            
+            Assert.assertEquals(0, downloadedFiles.size());
+            
+            downloadedFiles = fileManager.getDownloadedFiles("myappid", goodCurrent);
             
             Assert.assertEquals(1, downloadedFiles.size());
             
