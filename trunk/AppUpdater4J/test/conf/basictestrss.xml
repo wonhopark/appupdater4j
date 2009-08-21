@@ -29,7 +29,7 @@
         <item>
             <title>Version 0.0.5.1</title>
             <pubDate>Tue, 22 Aug 2005 04:32:51 -0700</pubDate>
-            <link>http://code.google.com/p/appupdater4j</link>
+            <link>http://appupdater4j.googlecode.com/svn/trunk/AppUpdater4J/test/conf/ant-test-first.zip</link>
             <au:major>0</au:major>
             <au:minor>0</au:minor>
             <au:build>5</au:build>
@@ -40,7 +40,7 @@
         <item>
             <title>Version 1.0.0</title>
             <pubDate>Tue, 14 Dec 2005 04:32:51 -0700</pubDate>
-            <link>http://code.google.com/p/appupdater4j</link>
+            <link>http://appupdater4j.googlecode.com/svn/trunk/AppUpdater4J/test/conf/ant-test-second.zip</link>
             <au:major>1</au:major>
             <au:minor>0</au:minor>
             <au:build>0</au:build>
