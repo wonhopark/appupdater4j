@@ -9,8 +9,6 @@ import org.gdteam.appupdater4j.model.Application;
 import org.gdteam.appupdater4j.model.ApplicationVersion;
 import org.gdteam.appupdater4j.version.feed.RSSReader;
 
-
-//TODO: local data
 public class VersionHandler {
 
     private URL feedURL;

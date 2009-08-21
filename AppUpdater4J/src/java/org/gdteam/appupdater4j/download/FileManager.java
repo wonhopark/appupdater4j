@@ -33,7 +33,8 @@ public class FileManager {
         this.fileStore = fileStore;        
     }
     
-    private UpdateFile getUpdateFile(String fileName) {
+    
+    public UpdateFile getUpdateFile(String fileName) {
         String md5 = null;
         String md5ToCompare = null;
         UpdateFile updateFile = new UpdateFile(fileStore, fileName);
@@ -67,6 +68,7 @@ public class FileManager {
                         updateFile.getPreviousVersion().setRevision(previous.getRevision());
                         
                         md5ToCompare = FileUtil.getMD5(zipFile.getInputStream(entry));
+                        
                     }
                 }
             }
@@ -94,6 +96,17 @@ public class FileManager {
     public File getFileStore() {
         return fileStore;
     }
+    
+    /**
+     * Return true if file is a valid update file
+     * @param updateFile
+     * @param applicationID
+     * @param currentVersion
+     * @return
+     */
+    public boolean isUpdateFileValid(UpdateFile updateFile, String applicationID, Version currentVersion) {
+        return updateFile != null && updateFile.getApplicationID().equals(applicationID) && updateFile.getPreviousVersion().equals(currentVersion);
+    }
 
     /**
      * Get valid downloaded files which can be installed (sorted by version)
@@ -106,7 +119,7 @@ public class FileManager {
         
         for (File file : fileStore.listFiles(UPDATE_FILE_FILTER)) {
             UpdateFile updateFile = this.getUpdateFile(file.getName());
-            if (updateFile != null && updateFile.getApplicationID().equals(applicationID)) {
+            if (this.isUpdateFileValid(updateFile, applicationID, currentVersion)) {
                 found.add(updateFile);
             }
         }
