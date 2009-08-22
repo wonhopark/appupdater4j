@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,38 +69,6 @@ public class DefaultUpdateController implements UpdateController {
         this.dialog.setVisible(true);
     }
 
-    public void installationEnded() { 
-        this.logTextArea.append("\nInstallation done");
-    }
-
-    public void installationFailed(Exception e) {
-        this.logTextArea.append("\nInstallation failed : " + e.getMessage());
-    }
-
-    public void installationStarted(String basedir) {
-        this.logTextArea.append("\nInstallation started (" + basedir + ")");
-    }
-
-    public void downloadDone() {
-        this.logTextArea.append("\nDownload done");
-    }
-
-    public void downloadedDataChanged(long size) {
-        this.logTextArea.append(".");
-    }
-
-    public void downloadFailed() {
-        this.logTextArea.append("\nDownload failed");
-    }
-
-    public void downloadStarted(long size) {
-        this.logTextArea.append("\nDownload started (file size : " + size + ") ");
-    }
-
-    public void flowSizeChanged(long size) {
-        //Do nothing
-    }
-
     public void setVersionToInstall(List<ApplicationVersion> versionList) {
         this.versionList = versionList;
         
@@ -116,6 +85,38 @@ public class DefaultUpdateController implements UpdateController {
 
     public void removeUpdateControllerListener(UpdateControllerListener listener) {
         this.listenerList.remove(listener);
+    }
+
+    public void downloadDone(ApplicationVersion applicationVersion, File dest) {
+        this.logTextArea.append("\nDownload done");
+    }
+
+    public void downloadFailed(ApplicationVersion applicationVersion) {
+        this.logTextArea.append("\nDownload failed");
+    }
+
+    public void downloadStarted(ApplicationVersion applicationVersion, long size) {
+        this.logTextArea.append("\nDownload started (" + applicationVersion.getUpdateURL() + ")");
+    }
+
+    public void downloadedDataChanged(ApplicationVersion applicationVersion,long size) {
+        this.logTextArea.append(".");
+    }
+
+    public void flowSizeChanged(ApplicationVersion applicationVersion, long size) {
+        //Do nothing
+    }
+
+    public void installationEnded(ApplicationVersion applicationVersion) {
+        this.logTextArea.append("\nInstallation done");
+    }
+
+    public void installationFailed(ApplicationVersion applicationVersion, Exception e) {
+        this.logTextArea.append("\nInstallation failed : " + e.getMessage());
+    }
+
+    public void installationStarted(ApplicationVersion applicationVersion, String basedir) {
+        this.logTextArea.append("\nInstallation started");
     }
     
     

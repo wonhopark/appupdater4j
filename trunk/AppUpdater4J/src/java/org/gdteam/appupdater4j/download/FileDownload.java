@@ -45,7 +45,7 @@ public class FileDownload {
             connection.connect();
             
             for (FileDownloadListener listener : this.listeners) {
-                listener.downloadStarted(Integer.valueOf(connection.getContentLength()).longValue());
+                listener.downloadStarted(this.source, Integer.valueOf(connection.getContentLength()).longValue());
             }
 
             in = connection.getInputStream();
@@ -66,7 +66,7 @@ public class FileDownload {
                     long flowSize = 1000 * tempWritten / duration;
                     
                     for (FileDownloadListener listener : this.listeners) {
-                        listener.flowSizeChanged(flowSize);
+                        listener.flowSizeChanged(this.source, flowSize);
                     }
                     
                     tempWritten = 0;
@@ -77,17 +77,17 @@ public class FileDownload {
                 tempWritten += numRead;
                 
                 for (FileDownloadListener listener : this.listeners) {
-                    listener.downloadedDataChanged(numWritten);
+                    listener.downloadedDataChanged(this.source, numWritten);
                 }
             }
             
             for (FileDownloadListener listener : this.listeners) {
-                listener.downloadDone();
+                listener.downloadDone(this.source, this.dest);
             }
             
         } catch (Exception e) {
             for (FileDownloadListener listener : this.listeners) {
-                listener.downloadFailed();
+                listener.downloadFailed(this.source);
             }            
             throw e;
         }finally {

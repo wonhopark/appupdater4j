@@ -1,5 +1,6 @@
 package org.gdteam.appupdater4j.ui.dialog;
 
+import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -7,14 +8,17 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -24,6 +28,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -34,13 +39,22 @@ import org.gdteam.appupdater4j.model.ApplicationVersion;
 
 public class UpdateDialog extends JFrame implements UpdateController {
     
+    public static final int UPLOAD_ICON_COLUMN = 0;
+    public static final int UPLOAD_NAME_COLUMN = 1;
+    public static final int UPLOAD_SIZE_COLUMN = 2;
     public static final int UPLOAD_STATE_COLUMN = 3;
     
-    private JButton installButton, cancelButton;
+    public static final Icon ICON_OK = new ImageIcon(UpdateDialog.class.getClassLoader().getResource("checkmark-16.png"));
+    public static final Icon ICON_FAILED = new ImageIcon(UpdateDialog.class.getClassLoader().getResource("cancel-16.png"));
+    
+    private JButton installButton, continueButton, cancelButton;
+    private JPanel validatePane;
     private JTable updateTable;
     
     private List<ApplicationVersion> versionList;
-    private int currentTableIndex = -1;
+    
+    private Map<ApplicationVersion, Integer> appVersionTableIndexes = new HashMap<ApplicationVersion, Integer>();
+    
     private long currentFileSize = 0;
     private long currentDownloadedSize = 0;
     private long elapsedTime = 0;
@@ -49,9 +63,17 @@ public class UpdateDialog extends JFrame implements UpdateController {
     
     private Timer timer = new Timer();
     private boolean downloading = false;
+    private DownloadTask elapsedTimeTask = new DownloadTask();
 
 
     public UpdateDialog() {
+        
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         
         this.setPreferredSize(new Dimension(512, 584));
         
@@ -101,7 +123,15 @@ public class UpdateDialog extends JFrame implements UpdateController {
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
-            
+
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                if (columnIndex == 0) {
+                    return Icon.class;
+                } else {
+                    return super.getColumnClass(columnIndex);
+                }   
+            }
         });
         
         TableColumnModel columnModel = this.updateTable.getColumnModel();
@@ -139,24 +169,33 @@ public class UpdateDialog extends JFrame implements UpdateController {
         mainPane.add(remark, gbc);
         
         gbc.gridy++;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.EAST;
         gbc.insets = new Insets(10, 20, 20, 20);
         
         this.installButton = new JButton("Installer");
         this.installButton.setSelected(true);
         this.installButton.requestFocus();
         this.cancelButton = new JButton("Plus tard");
+        this.continueButton = new JButton("Lancer");
+        
+        this.validatePane = new JPanel(new CardLayout());
+        
+        this.validatePane.add(this.installButton, "install");
+        this.validatePane.add(this.continueButton, "continue");
+        ((CardLayout) this.validatePane.getLayout()).show(this.validatePane, "install");
         
         JPanel buttonPane = new JPanel();
         buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
-        buttonPane.add(Box.createHorizontalGlue());
         buttonPane.add(cancelButton);
-        buttonPane.add(installButton);
+        buttonPane.add(this.validatePane);
         
         this.installButton.addActionListener(new ActionListener(){
 
             public void actionPerformed(ActionEvent e) {
                 for (UpdateControllerListener listener : listenerList) {
                     listener.startUpdate(UpdateDialog.this, versionList);
+                    installButton.setEnabled(false);
                 }
             }
         });
@@ -178,7 +217,7 @@ public class UpdateDialog extends JFrame implements UpdateController {
         
         splitPane.setDividerLocation(0.3);
         
-        this.timer.schedule(new DownloadTask(), 0, 1000);
+        this.timer.schedule(this.elapsedTimeTask, 0, 1000);
     }
 
     public void addUpdateControllerListener(UpdateControllerListener listener) {
@@ -196,6 +235,7 @@ public class UpdateDialog extends JFrame implements UpdateController {
     public void setVersionToInstall(List<ApplicationVersion> versionList) {
         
         this.versionList = versionList;
+        this.appVersionTableIndexes.clear();
         
         DefaultTableModel model = (DefaultTableModel) this.updateTable.getModel();
         int rowCount = model.getRowCount();
@@ -203,6 +243,7 @@ public class UpdateDialog extends JFrame implements UpdateController {
             model.removeRow(i);
         }
         
+        int index = 0;
         
         for (ApplicationVersion applicationVersion : versionList) {
             
@@ -214,7 +255,7 @@ public class UpdateDialog extends JFrame implements UpdateController {
             
             UpdateAction updateAction = new UpdateAction();
             updateAction.setProgression(0);
-            updateAction.setDescription("En attente");
+            updateAction.setDescription("");
             
             Object[] data = {"",
                              applicationVersion.getName(),
@@ -222,6 +263,10 @@ public class UpdateDialog extends JFrame implements UpdateController {
                              updateAction};
             
             model.addRow(data);
+            
+            this.appVersionTableIndexes.put(applicationVersion, Integer.valueOf(index));
+            
+            index++;
         }
         model.fireTableDataChanged();
     }
@@ -247,84 +292,9 @@ public class UpdateDialog extends JFrame implements UpdateController {
             }
         }
     }
-
-    public void installationEnded() {
-        UpdateAction action = (UpdateAction) this.updateTable.getModel().getValueAt(this.currentTableIndex, UPLOAD_STATE_COLUMN);
-        action.setDescription("Installe");
-        action.setIndeterminate(false);
-        ((DefaultTableModel) this.updateTable.getModel()).setValueAt(action, currentTableIndex, UPLOAD_STATE_COLUMN);
-        ((DefaultTableModel) this.updateTable.getModel()).fireTableCellUpdated(currentTableIndex, UPLOAD_STATE_COLUMN);
-    }
-
-    public void installationFailed(Exception e) {
-        UpdateAction action = (UpdateAction) this.updateTable.getModel().getValueAt(this.currentTableIndex, UPLOAD_STATE_COLUMN);
-        action.setDescription("Erreur");
-        action.setIndeterminate(false);
-        action.setProgression(0);
-        ((DefaultTableModel) this.updateTable.getModel()).setValueAt(action, currentTableIndex, UPLOAD_STATE_COLUMN);
-        ((DefaultTableModel) this.updateTable.getModel()).fireTableCellUpdated(currentTableIndex, UPLOAD_STATE_COLUMN);
-    }
-
-    public void installationStarted(String basedir) {
-        UpdateAction action = (UpdateAction) this.updateTable.getModel().getValueAt(this.currentTableIndex, UPLOAD_STATE_COLUMN);
-        action.setDescription("Installation");
-        action.setIndeterminate(true);
-        ((DefaultTableModel) this.updateTable.getModel()).setValueAt(action, currentTableIndex, UPLOAD_STATE_COLUMN);
-        ((DefaultTableModel) this.updateTable.getModel()).fireTableCellUpdated(currentTableIndex, UPLOAD_STATE_COLUMN);
-    }
-
-    public void downloadDone() {
-        this.downloading = false;
-        
-        UpdateAction action = (UpdateAction) this.updateTable.getModel().getValueAt(this.currentTableIndex, UPLOAD_STATE_COLUMN);
-        action.setDescription("Telecharge");
-        action.setProgression(100);
-        ((DefaultTableModel) this.updateTable.getModel()).setValueAt(action, currentTableIndex, UPLOAD_STATE_COLUMN);
-        ((DefaultTableModel) this.updateTable.getModel()).fireTableCellUpdated(currentTableIndex, UPLOAD_STATE_COLUMN);
-    }
-
-    public void downloadFailed() {
-        this.downloading = false;
-        
-        UpdateAction action = (UpdateAction) this.updateTable.getModel().getValueAt(this.currentTableIndex, UPLOAD_STATE_COLUMN);
-        action.setDescription("Erreur");
-        ((DefaultTableModel) this.updateTable.getModel()).setValueAt(action, currentTableIndex, UPLOAD_STATE_COLUMN);
-        ((DefaultTableModel) this.updateTable.getModel()).fireTableCellUpdated(currentTableIndex, UPLOAD_STATE_COLUMN);
-    }
-
-    public void downloadStarted(long size) {
-        this.downloading = true;
-        this.currentTableIndex++;
-        
-        this.currentFileSize = size;
-        this.currentDownloadedSize = 0;
-        
-        UpdateAction action = (UpdateAction) this.updateTable.getModel().getValueAt(this.currentTableIndex, UPLOAD_STATE_COLUMN);
-        action.setDescription("Telechargement");
-        action.setProgression(0);
-        ((DefaultTableModel) this.updateTable.getModel()).setValueAt(action, currentTableIndex, UPLOAD_STATE_COLUMN);
-        ((DefaultTableModel) this.updateTable.getModel()).fireTableCellUpdated(currentTableIndex, UPLOAD_STATE_COLUMN);
-    }
-
-    public void downloadedDataChanged(long size) {
-        
-        this.currentDownloadedSize = size;
-        
-        double progressValue = (Long.valueOf(this.currentDownloadedSize).doubleValue() / Long.valueOf(this.currentFileSize).doubleValue()) * Double.valueOf(100).doubleValue();
-        
-        UpdateAction action = (UpdateAction) this.updateTable.getModel().getValueAt(this.currentTableIndex, UPLOAD_STATE_COLUMN);
-        action.setProgression(Double.valueOf(progressValue).intValue());
-        ((DefaultTableModel) this.updateTable.getModel()).setValueAt(action, currentTableIndex, UPLOAD_STATE_COLUMN);
-        ((DefaultTableModel) this.updateTable.getModel()).fireTableCellUpdated(currentTableIndex, UPLOAD_STATE_COLUMN);
-    }
-
-    public void flowSizeChanged(long size) {
-        this.elapsedTime = (this.currentFileSize - this.currentDownloadedSize) / size;
-        
-        UpdateAction action = (UpdateAction) this.updateTable.getModel().getValueAt(this.currentTableIndex, UPLOAD_STATE_COLUMN);
-        action.setDescription(this.getCountDownText(elapsedTime));
-        ((DefaultTableModel) this.updateTable.getModel()).setValueAt(action, currentTableIndex, UPLOAD_STATE_COLUMN);
-        ((DefaultTableModel) this.updateTable.getModel()).fireTableCellUpdated(currentTableIndex, UPLOAD_STATE_COLUMN);
+    
+    private UpdateAction getUploadActionData(ApplicationVersion appVersion) {
+        return (UpdateAction) this.updateTable.getModel().getValueAt(this.appVersionTableIndexes.get(appVersion), UPLOAD_STATE_COLUMN);
     }
     
     private String getCountDownText(long duration) {
@@ -354,18 +324,97 @@ public class UpdateDialog extends JFrame implements UpdateController {
 
     private class DownloadTask extends TimerTask {
 
+        private ApplicationVersion appVersion;
+        
         @Override
         public void run() {
             if (elapsedTime > 0){
                 elapsedTime--;
                 
-                UpdateAction action = (UpdateAction) updateTable.getModel().getValueAt(currentTableIndex, UPLOAD_STATE_COLUMN);
+                UpdateAction action = getUploadActionData(appVersion);
                 action.setDescription(getCountDownText(elapsedTime));
-                ((DefaultTableModel) updateTable.getModel()).setValueAt(action, currentTableIndex, UPLOAD_STATE_COLUMN);
-                ((DefaultTableModel) updateTable.getModel()).fireTableCellUpdated(currentTableIndex, UPLOAD_STATE_COLUMN);
+                ((DefaultTableModel) updateTable.getModel()).fireTableDataChanged();
             }
         }
         
         
+    }
+
+    public void downloadDone(ApplicationVersion applicationVersion, File dest) {
+        this.downloading = false;
+        
+        UpdateAction action = this.getUploadActionData(applicationVersion);
+        action.setDescription("Telecharge");
+        action.setProgression(100);
+        ((DefaultTableModel) this.updateTable.getModel()).fireTableDataChanged();
+    }
+
+    public void downloadFailed(ApplicationVersion applicationVersion) {
+        this.downloading = false;
+        
+        UpdateAction action = this.getUploadActionData(applicationVersion);
+        action.setDescription("Erreur");
+        ((DefaultTableModel) this.updateTable.getModel()).fireTableDataChanged();
+    }
+
+    public void downloadStarted(ApplicationVersion applicationVersion, long size) {
+        this.downloading = true;
+        
+        this.currentFileSize = size;
+        this.currentDownloadedSize = 0;
+        
+        this.elapsedTimeTask.appVersion = applicationVersion;
+        
+        UpdateAction action = this.getUploadActionData(applicationVersion);
+        action.setDescription("Telechargement");
+        action.setProgression(0);
+        ((DefaultTableModel) this.updateTable.getModel()).fireTableDataChanged();
+    }
+
+    public void downloadedDataChanged(ApplicationVersion applicationVersion, long size) {
+        this.currentDownloadedSize = size;
+        
+        double progressValue = (Long.valueOf(this.currentDownloadedSize).doubleValue() / Long.valueOf(this.currentFileSize).doubleValue()) * Double.valueOf(100).doubleValue();
+        
+        UpdateAction action = this.getUploadActionData(applicationVersion);
+        action.setProgression(Double.valueOf(progressValue).intValue());
+        ((DefaultTableModel) this.updateTable.getModel()).fireTableDataChanged();
+    }
+
+    public void flowSizeChanged(ApplicationVersion applicationVersion, long size) {
+        this.elapsedTime = (this.currentFileSize - this.currentDownloadedSize) / size;
+        
+        UpdateAction action = this.getUploadActionData(applicationVersion);
+        action.setDescription(this.getCountDownText(elapsedTime));
+        ((DefaultTableModel) this.updateTable.getModel()).fireTableDataChanged();
+    }
+
+    public void installationEnded(ApplicationVersion applicationVersion) {
+        UpdateAction action = this.getUploadActionData(applicationVersion);
+        action.setDescription("Installe");
+        action.setIndeterminate(false);
+        
+        int rowIndex = this.appVersionTableIndexes.get(applicationVersion);
+        this.updateTable.getModel().setValueAt(ICON_OK, rowIndex, UPLOAD_ICON_COLUMN);
+        
+        ((DefaultTableModel) this.updateTable.getModel()).fireTableDataChanged();
+    }
+
+    public void installationFailed(ApplicationVersion applicationVersion, Exception e) {
+        UpdateAction action = this.getUploadActionData(applicationVersion);
+        action.setDescription("Erreur");
+        action.setIndeterminate(false);
+        
+        int rowIndex = this.appVersionTableIndexes.get(applicationVersion);
+        this.updateTable.getModel().setValueAt(ICON_FAILED, rowIndex, UPLOAD_ICON_COLUMN);
+        
+        ((DefaultTableModel) this.updateTable.getModel()).fireTableDataChanged();
+    }
+
+    public void installationStarted(ApplicationVersion applicationVersion, String basedir) {
+        UpdateAction action = this.getUploadActionData(applicationVersion);
+        action.setDescription("Installation");
+        action.setIndeterminate(true);
+        ((DefaultTableModel) this.updateTable.getModel()).fireTableDataChanged();
     }
 }

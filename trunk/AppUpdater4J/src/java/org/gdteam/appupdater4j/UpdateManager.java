@@ -1,32 +1,37 @@
 package org.gdteam.appupdater4j;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
 import org.gdteam.appupdater4j.download.FileDownloadHelper;
+import org.gdteam.appupdater4j.download.FileDownloadListener;
 import org.gdteam.appupdater4j.download.FileManager;
 import org.gdteam.appupdater4j.install.InstallationHelper;
+import org.gdteam.appupdater4j.install.InstallationListener;
 import org.gdteam.appupdater4j.model.ApplicationVersion;
 import org.gdteam.appupdater4j.model.UpdateFile;
 import org.gdteam.appupdater4j.model.Version;
 import org.gdteam.appupdater4j.version.VersionHandler;
 
-public class UpdateManager implements UpdateControllerListener{
+public class UpdateManager implements UpdateControllerListener, InstallationListener, FileDownloadListener{
     
     public static final String PROPERTY_PREFIX = "org.gdteam.appupdater4j";
 
     private String applicationID;
     private String currentVersion;
     private VersionHandler versionHandler;
-    private InstallationHelper installationHelper = new InstallationHelper();
+    private InstallationHelper installationHelper;
     private FileDownloadHelper fileDownloadHelper;
+    
+    private ApplicationVersion usedApplicationVersion = null;
+    
+    private List<UpdateListener> listeners = new ArrayList<UpdateListener>();
     
     
     /**
@@ -66,11 +71,16 @@ public class UpdateManager implements UpdateControllerListener{
             e.printStackTrace();
         }
         
+        this.installationHelper = new InstallationHelper();
+        this.installationHelper.addInstallationListener(this);
+        
         this.autoFileManager = new FileManager(new File(System.getProperty("user.dir")));
         
         File tempDir = new File(System.getProperty("java.io.tmpdir"), "appupdater4j");
         
         this.fileDownloadHelper = new FileDownloadHelper(tempDir);
+        this.fileDownloadHelper.addFileDownloadListener(this);
+        
         this.tempFileManager = new FileManager(tempDir);
     }
     
@@ -141,6 +151,8 @@ public class UpdateManager implements UpdateControllerListener{
     }
     
     private void downloadAndInstallAppVersion(ApplicationVersion appVersion) throws Exception {
+        this.usedApplicationVersion = appVersion;
+        
         //First, download
         File dest = new File(this.tempFileManager.getFileStore(), System.currentTimeMillis() + ".zip");
         
@@ -157,15 +169,63 @@ public class UpdateManager implements UpdateControllerListener{
         
     }
 
-    public InstallationHelper getInstallationHelper() {
-        return installationHelper;
-    }
-
-    public FileDownloadHelper getFileDownloadHelper() {
-        return fileDownloadHelper;
-    }
-
     public String getCurrentVersion() {
         return currentVersion;
+    }
+
+    public void installationEnded(File installFile) {
+        for (UpdateListener listener : this.listeners) {
+            listener.installationEnded(usedApplicationVersion);
+        }
+    }
+
+    public void installationFailed(File installFile, Exception e) {
+        for (UpdateListener listener : this.listeners) {
+            listener.installationFailed(usedApplicationVersion, e);
+        }
+    }
+
+    public void installationStarted(File installFile, String basedir) {
+        for (UpdateListener listener : this.listeners) {
+            listener.installationStarted(usedApplicationVersion, basedir);
+        }
+    }
+
+    public void addUpdateListener(UpdateListener element) {
+        listeners.add(element);
+    }
+
+    public boolean removeUpdateListener(UpdateListener o) {
+        return listeners.remove(o);
+    }
+
+    public void downloadDone(URL source, File dest) {
+        for (UpdateListener listener : this.listeners) {
+            listener.downloadDone(usedApplicationVersion, dest);
+        }
+    }
+
+    public void downloadFailed(URL source) {
+        for (UpdateListener listener : this.listeners) {
+            listener.downloadFailed(usedApplicationVersion);
+        }
+    }
+
+    public void downloadStarted(URL source, long size) {
+        for (UpdateListener listener : this.listeners) {
+            listener.downloadStarted(usedApplicationVersion, size);
+        }
+    }
+
+    public void downloadedDataChanged(URL source, long size) {
+        for (UpdateListener listener : this.listeners) {
+            listener.downloadedDataChanged(usedApplicationVersion, size);
+        }
+    }
+
+    public void flowSizeChanged(URL source, long size) {
+        for (UpdateListener listener : this.listeners) {
+            listener.flowSizeChanged(usedApplicationVersion, size);
+        }
     }
 }
