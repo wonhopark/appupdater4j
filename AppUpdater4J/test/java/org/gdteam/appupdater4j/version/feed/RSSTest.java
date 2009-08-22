@@ -60,6 +60,7 @@ public class RSSTest {
             Assert.assertNull(firstVersion.getVersion().getRevision());
             Assert.assertEquals("Version initiale", firstVersion.getDescription(fr));
             Assert.assertEquals("Initial version", firstVersion.getDescription(en));
+            Assert.assertEquals(Long.valueOf(11000), firstVersion.getFileSize());
             
             //Second
             ApplicationVersion secondVersion = app.getVersions().get(1);
@@ -72,30 +73,33 @@ public class RSSTest {
             Assert.assertNull(secondVersion.getVersion().getRevision());
             Assert.assertEquals("Seconde version", secondVersion.getDescription(fr));
             Assert.assertEquals("Second version", secondVersion.getDescription(en));
+            Assert.assertEquals(Long.valueOf(22000), secondVersion.getFileSize());
             
             //Third
             ApplicationVersion thirdVersion = app.getVersions().get(2);
             Assert.assertEquals("Version 0.0.5.1", thirdVersion.getName());
             Assert.assertEquals(new Date("22 Aug 2005 04:32:51 -0700").toString(), thirdVersion.getPublicationDate().toString());
-            Assert.assertEquals("http://code.google.com/p/appupdater4j", thirdVersion.getUpdateURL());
+            Assert.assertEquals("http://appupdater4j.googlecode.com/svn/trunk/AppUpdater4J/test/conf/ant-test-first.zip", thirdVersion.getUpdateURL());
             Assert.assertEquals("0", thirdVersion.getVersion().getMajor());
             Assert.assertEquals("0", thirdVersion.getVersion().getMinor());
             Assert.assertEquals("5", thirdVersion.getVersion().getBuild());
             Assert.assertEquals("1", thirdVersion.getVersion().getRevision());
             Assert.assertEquals("Troisieme version", thirdVersion.getDescription(fr));
             Assert.assertEquals("Third version", thirdVersion.getDescription(en));
+            Assert.assertEquals(Long.valueOf(971571), thirdVersion.getFileSize());
             
             //Official
             ApplicationVersion officialVersion = app.getVersions().get(3);
             Assert.assertEquals("Version 1.0.0", officialVersion.getName());
             Assert.assertEquals(new Date("14 Dec 2005 04:32:51 -0700").toString(), officialVersion.getPublicationDate().toString());
-            Assert.assertEquals("http://code.google.com/p/appupdater4j", officialVersion.getUpdateURL());
+            Assert.assertEquals("http://appupdater4j.googlecode.com/svn/trunk/AppUpdater4J/test/conf/ant-test-second.zip", officialVersion.getUpdateURL());
             Assert.assertEquals("1", officialVersion.getVersion().getMajor());
             Assert.assertEquals("0", officialVersion.getVersion().getMinor());
             Assert.assertEquals("0", officialVersion.getVersion().getBuild());
             Assert.assertNull(officialVersion.getVersion().getRevision());
             Assert.assertEquals("Version officielle", officialVersion.getDescription(fr));
             Assert.assertEquals("Official version", officialVersion.getDescription(en));
+            Assert.assertEquals(Long.valueOf(971615), officialVersion.getFileSize());
             
         } catch (Exception e) {
             e.printStackTrace();

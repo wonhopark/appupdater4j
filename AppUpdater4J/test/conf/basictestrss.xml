@@ -15,6 +15,7 @@
             <au:build>4</au:build>
             <au:description lang="fr">Version initiale</au:description>
             <au:description lang="en">Initial version</au:description>
+            <au:size>11000</au:size>
         </item>
         <item>
             <title>Version 0.0.5</title>
@@ -25,6 +26,7 @@
             <au:build>5</au:build>
             <au:description lang="fr">Seconde version</au:description>
             <au:description lang="en">Second version</au:description>
+            <au:size>22000</au:size>
         </item>
         <item>
             <title>Version 0.0.5.1</title>
@@ -36,6 +38,7 @@
             <au:revision>1</au:revision>
             <au:description lang="fr">Troisieme version</au:description>
             <au:description lang="en">Third version</au:description>
+            <au:size>971571</au:size>
         </item>
         <item>
             <title>Version 1.0.0</title>
@@ -47,6 +50,7 @@
             <au:reboot>true</au:reboot>
             <au:description lang="fr">Version officielle</au:description>
             <au:description lang="en">Official version</au:description>
+            <au:size>971615</au:size>
         </item>
     </channel>
 </rss>

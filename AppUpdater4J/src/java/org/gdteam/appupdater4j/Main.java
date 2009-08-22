@@ -82,7 +82,7 @@ public class Main {
         this.updateManager.performCheckForUpdate();
         
         if (this.updateManager.needUpdate()) {
-            UpdateController controller = UpdateControllerFactory.getUpdateController();
+            UpdateController controller = UpdateControllerFactory.getUpdateController((String) this.properties.get("dialog.class"));
             controller.addUpdateControllerListener(this.updateManager);
             
             this.updateManager.getInstallationHelper().addInstallationListener(controller);

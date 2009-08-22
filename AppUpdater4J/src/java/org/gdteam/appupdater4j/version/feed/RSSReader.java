@@ -28,6 +28,7 @@ public class RSSReader {
     public static final String VERSION_REVISION = "au:revision";
     public static final String VERSION_REBOOT = "au:reboot";
     public static final String VERSION_DESCRIPTION = "au:description";
+    public static final String VERSION_SIZE = "au:size";
 
     /**
      * Get org.gdteam.appupdater4j.model.Application representation
@@ -75,6 +76,8 @@ public class RSSReader {
                     appVersion.setNeedReboot(Boolean.valueOf(element.getValue()));
                 } else if (element.getQualifiedName().equals(VERSION_DESCRIPTION)) {
                     appVersion.putDescription(new Locale(element.getAttributeValue("lang")), element.getValue());
+                } else if (element.getQualifiedName().equals(VERSION_SIZE)) {
+                    appVersion.setFileSize(Long.valueOf(element.getValue()));
                 }
             }
             
