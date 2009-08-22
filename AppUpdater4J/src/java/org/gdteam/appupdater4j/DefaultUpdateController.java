@@ -118,6 +118,15 @@ public class DefaultUpdateController implements UpdateController {
     public void installationStarted(ApplicationVersion applicationVersion, String basedir) {
         this.logTextArea.append("\nInstallation started");
     }
+
+    public void wrappedApplicationReadyToBeRun() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void restorationFailed(ApplicationVersion applicationVersion, Exception e) {
+        this.logTextArea.append("\nRestore failed : " + e.getMessage());
+    }
     
     
 }

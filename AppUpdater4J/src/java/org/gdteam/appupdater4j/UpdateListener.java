@@ -28,6 +28,13 @@ public interface UpdateListener {
     public void installationEnded(ApplicationVersion applicationVersion);
     
     /**
+     * Notify listener tha restoration failed
+     * @Param exception
+     * @param applicationVersion
+     */
+    public void restorationFailed(ApplicationVersion applicationVersion, Exception e);
+    
+    /**
      * Notify listener that installation failed
      * @param applicationVersion
      * @Param exception
@@ -67,4 +74,11 @@ public interface UpdateListener {
      * @param size initial file size (bytes)
      */
     public void downloadStarted(ApplicationVersion applicationVersion, long size);
+    
+    /**
+     * Notify listener that wrapped application is ready to be run
+     */
+    public void wrappedApplicationReadyToBeRun();
+    
+    
 }

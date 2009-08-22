@@ -38,6 +38,11 @@ public class InstallTest {
                     this.basedir = new File(basedir);
                     System.out.println(this.basedir.getPath());
                 }
+
+                public void restorationFailed(File installFile, Exception e) {
+                    // TODO Auto-generated method stub
+                    
+                }
                 
             });
         
@@ -72,6 +77,11 @@ public class InstallTest {
                 public void installationStarted(File installFile, String basedir) {
                     this.basedir = new File(basedir);
                     System.out.println(this.basedir.getPath());
+                }
+
+                public void restorationFailed(File installFile, Exception e) {
+                    // TODO Auto-generated method stub
+                    
                 }
                 
             });

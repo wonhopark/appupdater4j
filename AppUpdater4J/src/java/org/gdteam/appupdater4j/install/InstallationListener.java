@@ -24,4 +24,11 @@ public interface InstallationListener {
      * @Param exception
      */
     public void installationFailed(File installFile, Exception e);
+    
+    /**
+     * Notify listener that restoration failed
+     * @param installFile
+     * @param e
+     */
+    public void restorationFailed(File installFile, Exception e);
 }
