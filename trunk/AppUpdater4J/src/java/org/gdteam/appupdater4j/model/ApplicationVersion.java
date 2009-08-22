@@ -12,6 +12,7 @@ public class ApplicationVersion implements Comparable<ApplicationVersion> {
     private Map<Locale, String> localizedDescription = new HashMap<Locale, String>();
     private Date publicationDate;
     private String name;
+    private Long fileSize;
     private Version version = new Version();
     
     
@@ -58,6 +59,12 @@ public class ApplicationVersion implements Comparable<ApplicationVersion> {
     }
     public Version getVersion() {
         return version;
+    }
+    public Long getFileSize() {
+        return fileSize;
+    }
+    public void setFileSize(Long fileSize) {
+        this.fileSize = fileSize;
     }
     
 }
