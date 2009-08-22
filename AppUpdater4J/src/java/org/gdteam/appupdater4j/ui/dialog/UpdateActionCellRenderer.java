@@ -55,6 +55,9 @@ public class UpdateActionCellRenderer extends JPanel implements TableCellRendere
         if (isSelected) {
             foreGround = UIManager.getLookAndFeelDefaults().getColor("Table.selectionForeground");
             backGround = UIManager.getLookAndFeelDefaults().getColor("Table.selectionBackground");
+        } else if (row % 2 == 1 && !isSelected) {
+            Color c = UIManager.getLookAndFeelDefaults().getColor("Table.selectionBackground");
+            backGround = new Color(c.getRed(), c.getGreen(), c.getBlue(), 20);
         }
         
         this.setBackground(backGround);
