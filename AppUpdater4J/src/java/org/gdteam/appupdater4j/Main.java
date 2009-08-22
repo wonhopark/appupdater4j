@@ -4,11 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Date;
-import java.util.List;
 import java.util.Properties;
 
-import org.gdteam.appupdater4j.install.InstallationHelper;
-import org.gdteam.appupdater4j.model.UpdateFile;
 import org.gdteam.appupdater4j.model.Version;
 import org.gdteam.appupdater4j.wrapper.ApplicationLauncher;
 
@@ -85,8 +82,7 @@ public class Main {
             UpdateController controller = UpdateControllerFactory.getUpdateController((String) this.properties.get("dialog.class"));
             controller.addUpdateControllerListener(this.updateManager);
             
-            this.updateManager.getInstallationHelper().addInstallationListener(controller);
-            this.updateManager.getFileDownloadHelper().addFileDownloadListener(controller);
+            this.updateManager.addUpdateListener(controller);
             
             controller.setVersionToInstall(this.updateManager.getVersionToInstallList());
             controller.displayController();

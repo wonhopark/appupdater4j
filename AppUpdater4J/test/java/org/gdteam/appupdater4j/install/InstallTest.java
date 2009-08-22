@@ -22,7 +22,7 @@ public class InstallTest {
                 
                 private File basedir;
     
-                public void installationEnded() {
+                public void installationEnded(File installFile) {
                     //Check if dirs are created
                     File installSuccess = new File(basedir, "install-success");
                     Assert.assertTrue("Cannot find install-success", installSuccess.exists());
@@ -30,11 +30,11 @@ public class InstallTest {
                     Assert.assertTrue("Cannot find backup-success", backupSuccess.exists());
                 }
     
-                public void installationFailed(Exception e) {
+                public void installationFailed(File installFile, Exception e) {
                     Assert.fail("Install failed : " + e.getMessage());
                 }
     
-                public void installationStarted(String basedir) {
+                public void installationStarted(File installFile, String basedir) {
                     this.basedir = new File(basedir);
                     System.out.println(this.basedir.getPath());
                 }
@@ -57,7 +57,7 @@ public class InstallTest {
                 
                 private File basedir;
     
-                public void installationEnded() {
+                public void installationEnded(File installFile) {
                     //Check if dirs are created
                     File restoreSuccess = new File(basedir, "restore-success");
                     Assert.assertTrue("Cannot find restore-success", restoreSuccess.exists());
@@ -65,11 +65,11 @@ public class InstallTest {
                     Assert.assertTrue("Cannot find backup-success", backupSuccess.exists());
                 }
     
-                public void installationFailed(Exception e) {
+                public void installationFailed(File installFile, Exception e) {
                     Assert.assertTrue("Bad ant message : " + e.getMessage(), e.getMessage().contains("Explicitly failed for test purpose"));
                 }
     
-                public void installationStarted(String basedir) {
+                public void installationStarted(File installFile, String basedir) {
                     this.basedir = new File(basedir);
                     System.out.println(this.basedir.getPath());
                 }

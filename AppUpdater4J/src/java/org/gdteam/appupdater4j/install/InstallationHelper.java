@@ -28,7 +28,7 @@ public class InstallationHelper {
         StringBuilder dir = new StringBuilder(System.getProperty("java.io.tmpdir")).append("gdteam/").append(dirName).append("/");
         
         for (InstallationListener listener : listeners) {
-            listener.installationStarted(dir.toString());
+            listener.installationStarted(zip, dir.toString());
         }
 
         //Unzip update file
@@ -43,11 +43,11 @@ public class InstallationHelper {
             this.runAntTargets(dir.toString(), properties);
             
             for (InstallationListener listener : listeners) {
-                listener.installationEnded();
+                listener.installationEnded(zip);
             }
         } catch (Exception e) {
             for (InstallationListener listener : listeners) {
-                listener.installationFailed(e);
+                listener.installationFailed(zip, e);
             }
         }
         
