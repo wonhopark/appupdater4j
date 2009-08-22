@@ -43,6 +43,7 @@ public class UpdateActionCellRenderer extends JPanel implements TableCellRendere
         UpdateAction updateAction = (UpdateAction) value;
         
         this.progressBar.setValue(updateAction.getProgression());
+        this.progressBar.setIndeterminate(updateAction.isIndeterminate());
         this.description.setText(updateAction.getDescription());
         
         return this;

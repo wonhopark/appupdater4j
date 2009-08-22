@@ -249,18 +249,28 @@ public class UpdateDialog extends JFrame implements UpdateController {
     }
 
     public void installationEnded() {
-        // TODO Auto-generated method stub
-        
+        UpdateAction action = (UpdateAction) this.updateTable.getModel().getValueAt(this.currentTableIndex, UPLOAD_STATE_COLUMN);
+        action.setDescription("Installe");
+        action.setIndeterminate(false);
+        ((DefaultTableModel) this.updateTable.getModel()).setValueAt(action, currentTableIndex, UPLOAD_STATE_COLUMN);
+        ((DefaultTableModel) this.updateTable.getModel()).fireTableCellUpdated(currentTableIndex, UPLOAD_STATE_COLUMN);
     }
 
     public void installationFailed(Exception e) {
-        // TODO Auto-generated method stub
-        
+        UpdateAction action = (UpdateAction) this.updateTable.getModel().getValueAt(this.currentTableIndex, UPLOAD_STATE_COLUMN);
+        action.setDescription("Erreur");
+        action.setIndeterminate(false);
+        action.setProgression(0);
+        ((DefaultTableModel) this.updateTable.getModel()).setValueAt(action, currentTableIndex, UPLOAD_STATE_COLUMN);
+        ((DefaultTableModel) this.updateTable.getModel()).fireTableCellUpdated(currentTableIndex, UPLOAD_STATE_COLUMN);
     }
 
     public void installationStarted(String basedir) {
-        // TODO Auto-generated method stub
-        
+        UpdateAction action = (UpdateAction) this.updateTable.getModel().getValueAt(this.currentTableIndex, UPLOAD_STATE_COLUMN);
+        action.setDescription("Installation");
+        action.setIndeterminate(true);
+        ((DefaultTableModel) this.updateTable.getModel()).setValueAt(action, currentTableIndex, UPLOAD_STATE_COLUMN);
+        ((DefaultTableModel) this.updateTable.getModel()).fireTableCellUpdated(currentTableIndex, UPLOAD_STATE_COLUMN);
     }
 
     public void downloadDone() {
