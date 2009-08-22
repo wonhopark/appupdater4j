@@ -65,7 +65,8 @@ public class DefaultUpdateController implements UpdateController {
         dialog.setLocationRelativeTo(null);
     }
     
-    public void displayController() {
+    public void displayController(String title) {
+        this.dialog.setTitle(title);
         this.dialog.setVisible(true);
     }
 

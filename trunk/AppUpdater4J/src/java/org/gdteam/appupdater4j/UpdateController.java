@@ -14,9 +14,11 @@ public interface UpdateController extends UpdateListener {
      * @param listener
      */
     public void removeUpdateControllerListener(UpdateControllerListener listener);
+    
     /**
      * Displays controller
+     * @param
      */
-    public void displayController();
+    public void displayController(String title);
     
 }

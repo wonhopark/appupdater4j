@@ -85,8 +85,7 @@ public class Main {
             this.updateManager.addUpdateListener(controller);
             
             controller.setVersionToInstall(this.updateManager.getVersionToInstallList());
-            controller.displayController();
-            
+            controller.displayController(this.properties.getProperty("dialog.title"));
         }
         
     }

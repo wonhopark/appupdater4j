@@ -1,6 +1,8 @@
 package org.gdteam.appupdater4j.ui.dialog;
 
 import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -8,6 +10,9 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -26,6 +31,7 @@ import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -33,10 +39,12 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
@@ -140,7 +148,28 @@ public class UpdateDialog extends JFrame implements UpdateController {
                     return super.getColumnClass(columnIndex);
                 }   
             }
-        });
+            
+            
+        }) {
+
+            @Override
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+                Component comp = super.prepareRenderer(renderer, row, column);
+
+                boolean selected = isCellSelected(row, column);
+                
+                if (row % 2 == 1 && !selected){
+                    Color c = UIManager.getLookAndFeelDefaults().getColor("Table.selectionBackground");
+                    comp.setBackground(new Color(c.getRed(), c.getGreen(), c.getBlue(), 20));
+                } else if (row % 2 == 0 && !selected){
+                    comp.setBackground(UIManager.getLookAndFeelDefaults().getColor("Table.background"));
+                }
+                return comp;
+            }
+            
+        };
+        
+        this.updateTable.setRowHeight(this.updateTable.getRowHeight() + 4);
         
         TableColumnModel columnModel = this.updateTable.getColumnModel();
         
@@ -151,6 +180,8 @@ public class UpdateDialog extends JFrame implements UpdateController {
             }
             
         });
+        
+        this.updateTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
         TableColumn stateColumn = columnModel.getColumn(0);
         stateColumn.setHeaderValue("");
@@ -190,8 +221,16 @@ public class UpdateDialog extends JFrame implements UpdateController {
         gbc.insets = new Insets(10, 20, 20, 20);
         
         this.installButton = new JButton("Installer");
-        this.installButton.setSelected(true);
-        this.installButton.requestFocus();
+        this.installButton.addKeyListener(new KeyAdapter(){
+            
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyChar() == "\n".charAt(0)) {
+                    startInstallation();
+                }
+            }
+            
+        });
         this.cancelButton = new JButton("Plus tard");
         this.continueButton = new JButton("Continuer");
         
@@ -209,17 +248,15 @@ public class UpdateDialog extends JFrame implements UpdateController {
         this.installButton.addActionListener(new ActionListener(){
 
             public void actionPerformed(ActionEvent e) {
-                for (UpdateControllerListener listener : listenerList) {
-                    listener.startUpdate(UpdateDialog.this, versionList);
-                    installButton.setEnabled(false);
-                    cancelButton.setEnabled(false);
-                }
+                startInstallation();
             }
         });
         
         mainPane.add(buttonPane, gbc);
         
         this.pack();
+        
+        this.installButton.requestFocusInWindow(); 
         
         //Resize table header sizes
         int updateTableWidth = this.updateTable.getWidth();
@@ -236,12 +273,21 @@ public class UpdateDialog extends JFrame implements UpdateController {
         
         this.timer.schedule(this.elapsedTimeTask, 0, 1000);
     }
+    
+    private void startInstallation() {
+        for (UpdateControllerListener listener : listenerList) {
+            listener.startUpdate(UpdateDialog.this, versionList);
+            installButton.setEnabled(false);
+            cancelButton.setEnabled(false);
+        }
+    }
 
     public void addUpdateControllerListener(UpdateControllerListener listener) {
         this.listenerList.add(listener);
     }
 
-    public void displayController() {
+    public void displayController(String title) {
+        this.setTitle(title);
         this.setVisible(true);
     }
 
