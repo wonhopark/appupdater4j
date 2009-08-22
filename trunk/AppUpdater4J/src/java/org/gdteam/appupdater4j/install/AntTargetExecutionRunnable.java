@@ -7,13 +7,18 @@ import java.util.concurrent.CountDownLatch;
 
 public class AntTargetExecutionRunnable implements Runnable {
 
+    public static final String TARGET_BACKUP = "backup";
+    public static final String TARGET_INSTALL = "install";
+    public static final String TARGET_RESTORE = "restore";
+    
+    
     private Properties properties = new Properties();
     
     private CountDownLatch workDone;
     private File antFile;
     private File basedir;
     
-    private Exception throwed;
+    private InstallationException throwed;
 
     public AntTargetExecutionRunnable(CountDownLatch workDone, String antFile, File basedir, Properties properties){
         this.workDone = workDone;
@@ -23,15 +28,15 @@ public class AntTargetExecutionRunnable implements Runnable {
     }
     
     private void runBackupTarget() throws Exception{
-        this.runTarget("backup");
+        this.runTarget(TARGET_BACKUP);
     }
     
     private void runInstallTarget() throws Exception{
-        this.runTarget("install");
+        this.runTarget(TARGET_INSTALL);
     }
     
     private void runRestoreTarget() throws Exception{
-        this.runTarget("restore");
+        this.runTarget(TARGET_RESTORE);
     }
     
 
@@ -48,7 +53,7 @@ public class AntTargetExecutionRunnable implements Runnable {
             //Run backup target
             this.runBackupTarget();
           } catch (Exception e) {
-              this.throwed = e;
+              this.throwed = new InstallationException(TARGET_BACKUP, e);
               this.workDone.countDown();
               return;
           }
@@ -61,10 +66,10 @@ public class AntTargetExecutionRunnable implements Runnable {
               try {
                   this.runRestoreTarget();
                   
-                  this.throwed = e;
+                  this.throwed = new InstallationException(TARGET_INSTALL, e);
               } catch (Exception e1) {
                   //Bad bad
-                  this.throwed = e1;
+                  this.throwed = new InstallationException(TARGET_RESTORE, e1);
               }
           }
           

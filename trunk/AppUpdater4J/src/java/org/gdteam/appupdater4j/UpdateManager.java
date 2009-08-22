@@ -144,6 +144,10 @@ public class UpdateManager implements UpdateControllerListener, InstallationList
                     // TODO: handle exception
                     e.printStackTrace();
                 }
+                
+                for (UpdateListener listener : listeners) {
+                    listener.wrappedApplicationReadyToBeRun();
+                }
             }
         });
         
@@ -226,6 +230,12 @@ public class UpdateManager implements UpdateControllerListener, InstallationList
     public void flowSizeChanged(URL source, long size) {
         for (UpdateListener listener : this.listeners) {
             listener.flowSizeChanged(usedApplicationVersion, size);
+        }
+    }
+
+    public void restorationFailed(File installFile, Exception e) {
+        for (UpdateListener listener : this.listeners) {
+            listener.restorationFailed(usedApplicationVersion, e);
         }
     }
 }

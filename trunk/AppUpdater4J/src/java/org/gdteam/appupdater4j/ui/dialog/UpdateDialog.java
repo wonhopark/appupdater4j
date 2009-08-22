@@ -12,7 +12,9 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -21,14 +23,19 @@ import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -50,6 +57,7 @@ public class UpdateDialog extends JFrame implements UpdateController {
     private JButton installButton, continueButton, cancelButton;
     private JPanel validatePane;
     private JTable updateTable;
+    private JEditorPane descriptionArea;
     
     private List<ApplicationVersion> versionList;
     
@@ -136,6 +144,14 @@ public class UpdateDialog extends JFrame implements UpdateController {
         
         TableColumnModel columnModel = this.updateTable.getColumnModel();
         
+        this.updateTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
+            public void valueChanged(ListSelectionEvent e) {
+                displaySelectedDescription();
+            }
+            
+        });
+        
         TableColumn stateColumn = columnModel.getColumn(0);
         stateColumn.setHeaderValue("");
         stateColumn.setMaxWidth(20);
@@ -151,12 +167,12 @@ public class UpdateDialog extends JFrame implements UpdateController {
         downloadColumn.setHeaderValue("Telechargement/Installation");
         downloadColumn.setCellRenderer(new UpdateActionCellRenderer());
         
-        JTextArea description = new JTextArea();
-        description.setEditable(false);
-        description.setWrapStyleWord(true);
-        description.setLineWrap(true);
+        this.descriptionArea = new JEditorPane("text/html", "");
+        this.descriptionArea.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+        this.descriptionArea.setFont(UIManager.getLookAndFeelDefaults().getFont("TextArea.font"));
+        this.descriptionArea.setEditable(false);
         
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JScrollPane(this.updateTable), new JScrollPane(description));
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JScrollPane(this.updateTable), new JScrollPane(this.descriptionArea));
         
         mainPane.add(splitPane, gbc);
         
@@ -177,7 +193,7 @@ public class UpdateDialog extends JFrame implements UpdateController {
         this.installButton.setSelected(true);
         this.installButton.requestFocus();
         this.cancelButton = new JButton("Plus tard");
-        this.continueButton = new JButton("Lancer");
+        this.continueButton = new JButton("Continuer");
         
         this.validatePane = new JPanel(new CardLayout());
         
@@ -196,6 +212,7 @@ public class UpdateDialog extends JFrame implements UpdateController {
                 for (UpdateControllerListener listener : listenerList) {
                     listener.startUpdate(UpdateDialog.this, versionList);
                     installButton.setEnabled(false);
+                    cancelButton.setEnabled(false);
                 }
             }
         });
@@ -339,6 +356,33 @@ public class UpdateDialog extends JFrame implements UpdateController {
         
         
     }
+    
+    private void displaySelectedDescription() {
+        
+        this.descriptionArea.setText("");
+        
+        int selectedRowIndex = this.updateTable.getSelectedRow();
+        
+        if (selectedRowIndex != -1) {
+            ApplicationVersion appVersion = this.getApplicationVersion(selectedRowIndex);
+            
+            this.descriptionArea.setText("<html>" + appVersion.getDescription(new Locale(Locale.getDefault().getLanguage())) + "</html>");
+        }
+    }
+    
+    private ApplicationVersion getApplicationVersion(int rowIndex) {
+        Iterator<ApplicationVersion> it = this.appVersionTableIndexes.keySet().iterator();
+        
+        while (it.hasNext()) {
+            ApplicationVersion applicationVersion = (ApplicationVersion) it.next();
+            
+            if (rowIndex == this.appVersionTableIndexes.get(applicationVersion)) {
+                return applicationVersion;
+            }
+        }
+        
+        return null;
+    }
 
     public void downloadDone(ApplicationVersion applicationVersion, File dest) {
         this.downloading = false;
@@ -409,6 +453,8 @@ public class UpdateDialog extends JFrame implements UpdateController {
         this.updateTable.getModel().setValueAt(ICON_FAILED, rowIndex, UPLOAD_ICON_COLUMN);
         
         ((DefaultTableModel) this.updateTable.getModel()).fireTableDataChanged();
+        
+        JOptionPane.showMessageDialog(this, "La mise a jour n'est pas complete", "Installation echouee", JOptionPane.ERROR_MESSAGE);
     }
 
     public void installationStarted(ApplicationVersion applicationVersion, String basedir) {
@@ -416,5 +462,13 @@ public class UpdateDialog extends JFrame implements UpdateController {
         action.setDescription("Installation");
         action.setIndeterminate(true);
         ((DefaultTableModel) this.updateTable.getModel()).fireTableDataChanged();
+    }
+
+    public void wrappedApplicationReadyToBeRun() {
+        ((CardLayout) this.validatePane.getLayout()).show(this.validatePane, "continue");
+    }
+
+    public void restorationFailed(ApplicationVersion applicationVersion, Exception e) {
+        JOptionPane.showMessageDialog(this, "La mise a jour peut avoir altere le l'application", "Installation echouee", JOptionPane.ERROR_MESSAGE);
     }
 }
