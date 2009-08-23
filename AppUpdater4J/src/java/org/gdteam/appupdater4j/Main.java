@@ -3,10 +3,15 @@ package org.gdteam.appupdater4j;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Properties;
 
+import javax.swing.ImageIcon;
+
 import org.gdteam.appupdater4j.model.Version;
+import org.gdteam.appupdater4j.os.macosx.ReflectiveApplication;
 import org.gdteam.appupdater4j.wrapper.ApplicationLauncher;
 
 public class Main {
@@ -24,12 +29,22 @@ public class Main {
             throw new Exception(message.toString());
         }
         
+        //First get properties from classpath
         this.properties = new Properties();
+        try {
+            this.properties.load(this.getClass().getClassLoader().getResourceAsStream("appupdater4j.cfg.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        //Override properties
+        Properties fileProperties = new Properties();
+        
         FileInputStream fis = null;
         try {
             propertyFile = new File(args[0]);
             fis = new FileInputStream(propertyFile);
-            this.properties.load(fis);
+            fileProperties.load(fis);
         } catch (Exception e) {
             throw new Exception("Cannot open/read property file : " + args[0]);
         } finally {
@@ -39,6 +54,20 @@ public class Main {
                 } catch (Exception e) {
                 }
             }
+        }
+        
+        Iterator fileKeySet = fileProperties.keySet().iterator();
+        while (fileKeySet.hasNext()) {
+            Object key = (Object) fileKeySet.next();
+            this.properties.put(key, fileProperties.get(key));
+        }
+        
+        //Configure dock icon
+        String dockIconPath = this.properties.getProperty("dockicon.path");
+        if (dockIconPath == null) {
+            ReflectiveApplication.getApplication().setDockIconImage(new ImageIcon(this.getClass().getClassLoader().getResource("refresh-128.png")).getImage());
+        } else  {
+            ReflectiveApplication.getApplication().setDockIconImage(new ImageIcon(dockIconPath).getImage());
         }
     }
     

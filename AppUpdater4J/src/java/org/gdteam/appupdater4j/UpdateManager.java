@@ -47,22 +47,7 @@ public class UpdateManager implements UpdateControllerListener, InstallationList
      * Configure update manager
      * @param properties
      */
-    public void configure(Properties propertiesParam) {
-      //First get properties from classpath
-        Properties props = new Properties();
-        try {
-            props.load(this.getClass().getClassLoader().getResourceAsStream("updatemanager.cfg.properties"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-        //Override properties
-        Iterator argKeySet = propertiesParam.keySet().iterator();
-        while (argKeySet.hasNext()) {
-            Object key = (Object) argKeySet.next();
-            props.put(key, propertiesParam.get(key));
-        }
-        
+    public void configure(Properties props) {
         this.applicationID = props.getProperty("application.id");
         this.currentVersion = props.getProperty("application.version");
         try {
