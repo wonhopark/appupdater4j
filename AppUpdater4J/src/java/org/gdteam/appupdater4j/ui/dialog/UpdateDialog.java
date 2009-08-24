@@ -12,7 +12,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -31,14 +30,11 @@ import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
@@ -233,6 +229,33 @@ public class UpdateDialog extends JFrame implements UpdateController {
         });
         this.cancelButton = new JButton("Plus tard");
         this.continueButton = new JButton("Continuer");
+        
+        ActionListener closeListener = new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                for (UpdateControllerListener listener : UpdateDialog.this.listenerList) {
+                    listener.canStartWrappedApplication(UpdateDialog.this);
+                }
+            } 
+        };
+        
+        this.continueButton.addKeyListener(new KeyAdapter(){
+            
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyChar() == "\n".charAt(0)) {
+                    dispose();
+                    for (UpdateControllerListener listener : UpdateDialog.this.listenerList) {
+                        listener.canStartWrappedApplication(UpdateDialog.this);
+                    }
+                }
+            }
+            
+        });
+        
+        this.cancelButton.addActionListener(closeListener);
+        this.continueButton.addActionListener(closeListener);
         
         this.validatePane = new JPanel(new CardLayout());
         
@@ -512,6 +535,7 @@ public class UpdateDialog extends JFrame implements UpdateController {
 
     public void wrappedApplicationReadyToBeRun() {
         ((CardLayout) this.validatePane.getLayout()).show(this.validatePane, "continue");
+        this.continueButton.requestFocusInWindow();
     }
 
     public void restorationFailed(ApplicationVersion applicationVersion, Exception e) {

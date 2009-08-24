@@ -6,15 +6,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import javax.swing.ImageIcon;
 
+import org.gdteam.appupdater4j.model.ApplicationVersion;
 import org.gdteam.appupdater4j.model.Version;
 import org.gdteam.appupdater4j.os.macosx.ReflectiveApplication;
 import org.gdteam.appupdater4j.wrapper.ApplicationLauncher;
 
-public class Main {
+public class Main implements UpdateControllerListener {
     
     private File propertyFile;
     private Properties properties = null;
@@ -109,7 +111,7 @@ public class Main {
         
         if (this.updateManager.needUpdate()) {
             UpdateController controller = UpdateControllerFactory.getUpdateController((String) this.properties.get("dialog.class"));
-            controller.addUpdateControllerListener(this.updateManager);
+            controller.addUpdateControllerListener(this);
             
             this.updateManager.addUpdateListener(controller);
             
@@ -152,6 +154,14 @@ public class Main {
             e.printStackTrace();
             System.exit(0);
         }
+    }
+
+    public void canStartWrappedApplication(UpdateController source) {
+        System.out.println("Done...");
+    }
+
+    public void startUpdate(UpdateController source, List<ApplicationVersion> versionList) {
+        this.updateManager.startUpdate(versionList);
     }
 
 }
