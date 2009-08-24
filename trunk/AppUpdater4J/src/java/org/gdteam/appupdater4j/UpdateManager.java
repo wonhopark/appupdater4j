@@ -1,11 +1,9 @@
 package org.gdteam.appupdater4j;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -19,7 +17,7 @@ import org.gdteam.appupdater4j.model.UpdateFile;
 import org.gdteam.appupdater4j.model.Version;
 import org.gdteam.appupdater4j.version.VersionHandler;
 
-public class UpdateManager implements UpdateControllerListener, InstallationListener, FileDownloadListener{
+public class UpdateManager implements InstallationListener, FileDownloadListener{
     
     public static final String PROPERTY_PREFIX = "org.gdteam.appupdater4j";
 
@@ -116,7 +114,7 @@ public class UpdateManager implements UpdateControllerListener, InstallationList
         return this.autoFileManager.getDownloadedFiles(this.applicationID, Version.createVersion(this.currentVersion));
     }
 
-    public void startUpdate(UpdateController source, List<ApplicationVersion> versionList) {
+    public void startUpdate(List<ApplicationVersion> versionList) {
         
         final List<ApplicationVersion> rVersionList = versionList;
         Thread thread = new Thread(new Runnable(){

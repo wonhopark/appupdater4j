@@ -12,4 +12,10 @@ public interface UpdateControllerListener {
      * @param versionList version to install
      */
     public void startUpdate(UpdateController source, List<ApplicationVersion> versionList);
+    
+    /**
+     * Method called buy controller, when wrapped application can be run
+     * @param source
+     */
+    public void canStartWrappedApplication(UpdateController source);
 }
