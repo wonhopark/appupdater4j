@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<rss version="2.0" xmlns:au="http://code.google.com/p/appupdater4j">
+    <channel>
+        <title>Demo updtate feed</title>
+        <lastBuildDate>Mon, 24 Aug 2009 00:30:30 -0700</lastBuildDate>
+        <link>http://code.google.com/p/appupdater4j</link>
+        <au:id>demoid</au:id>
+        <au:name>AppUpdater Demo</au:name>
+        <item>
+            <title>Version 1.0.0</title>
+            <pubDate>Mon, 24 Aug 2009 00:30:30 -0700</pubDate>
+            <link>http://localhost:8729/zipfile?file=antupdate.jar</link>
+            <au:major>1</au:major>
+            <au:minor>0</au:minor>
+            <au:build>0</au:build>
+            <au:description lang="fr">&lt;b&gt;Mise &#224; jour 1.0.0 d'AppUpdater Demo&lt;/b&gt;&lt;br/&gt;La mise &#224; jour de 1.0.0 est recommand&#233;e pour tous les clients d'AppUpdater Demo et r&#233;sout plusieurs probl&#232;mes relatifs &#224; la fiabilit&#233; et la s&#233;curit&#233; dans son ensemble</au:description>
+            <au:description lang="en">&lt;b&gt;AppUpdater Demo 1.0.0 Update&lt;/b&gt;&lt;s/&gt;The AppUpdater Demo 1.0.0 Update is recommended for AppUpdater Demo users and includes general operating system fixes that enhance the stability, compatibility and security</au:description>
+            <au:size>11000</au:size>
+        </item>
+    </channel>
+</rss>
