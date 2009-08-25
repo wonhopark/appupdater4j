@@ -9,7 +9,7 @@
         <item>
             <title>Version 2.0.0</title>
             <pubDate>Mon, 24 Aug 2009 00:30:30 -0700</pubDate>
-            <link>http://code.google.com/p/appupdater4j/source/browse/trunk/AppUpdater4J/dist/demo/antupdate.jar</link>
+            <link>http://appupdater4j.googlecode.com/svn/trunk/AppUpdater4J/dist/demo/antupdate.jar</link>
             <au:major>2</au:major>
             <au:minor>0</au:minor>
             <au:build>0</au:build>
