@@ -46,7 +46,8 @@ public class InstallationHelper {
                 listener.installationEnded(zip);
             }
         } catch (Exception e) {
-            
+            //TODO: log
+            e.printStackTrace();
             if (e instanceof InstallationException && ((InstallationException) e).getTarget().equals(AntTargetExecutionRunnable.TARGET_RESTORE)) {
                 for (InstallationListener listener : listeners) {
                     listener.restorationFailed(zip, e);
