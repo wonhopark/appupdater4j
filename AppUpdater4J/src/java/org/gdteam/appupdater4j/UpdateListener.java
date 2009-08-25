@@ -1,7 +1,6 @@
 package org.gdteam.appupdater4j;
 
 import java.io.File;
-import java.net.URL;
 import java.util.List;
 
 import org.gdteam.appupdater4j.model.ApplicationVersion;
@@ -67,6 +66,12 @@ public interface UpdateListener {
      * @param applicationVersion
      */
     public void downloadFailed(ApplicationVersion applicationVersion);
+    
+    /**
+     * Notify listener that downloaded file is invalid
+     * @param applicationVersion
+     */
+    public void fileDownloadedIsInvalid(ApplicationVersion applicationVersion);
     
     /**
      * Notify listener that download is started

@@ -2,14 +2,6 @@
 	
 	<property name="jar.core.name" value="appupdater4j"/>
 	
-	<target name="build" depends="compile">
-		<!-- Create jar -->
-		<jar destfile="build/archives/${jar.core.name}.jar">
-			<fileset dir="build/classes">
-			</fileset>
-		</jar>
-	</target>
-	
 	<target name="classpath-def">
 		<path id="compile.path">
 			<fileset dir="lib/compile">
@@ -19,6 +11,11 @@
 		<path id="test.path">
 			<path refid="compile.path"/>
             <fileset dir="lib/test">
+                <include name="*.jar"/>
+            </fileset>
+        </path>
+		<path id="demo.path">
+            <fileset dir="lib/demo">
                 <include name="*.jar"/>
             </fileset>
         </path>
@@ -35,6 +32,8 @@
         <mkdir dir="build/classes" />
     	<mkdir dir="build/test" />
         <mkdir dir="build/test/classes" />
+    	<mkdir dir="build/demo" />
+    	<mkdir dir="build/demo/classes" />
     	<mkdir dir="build/tmp" />
     	<mkdir dir="build/tmp/junit" />
     	<mkdir dir="build/report" />
@@ -54,6 +53,26 @@
 			</fileset>
 		</copy>
 	</target>
+	
+	<target name="build" depends="compile">
+        <!-- Explode lib files in tmp -->
+		<unzip dest="build/tmp/expanded">
+            <fileset dir="lib/compile">
+                <include name="*.jar"/>
+            </fileset>
+        </unzip>
+        
+        <!-- Create jar -->
+        <jar destfile="build/archives/${jar.core.name}.jar">
+            <fileset dir="build/classes">
+            </fileset>
+        	<fileset dir="build/tmp/expanded" />
+        	<manifest >
+	            <attribute name="Built-By" value="GdTeam"/>
+                <attribute name="Main-Class" value="org.gdteam.appupdater4j.Main"/>
+            </manifest>
+        </jar>
+    </target>
 	
 	<target name="compile-test" depends="build">
 		<javac destdir="build/test/classes" encoding="UTF-8" source="1.5" target="1.5" debug="true">
@@ -104,5 +123,58 @@
             <report format="noframes" todir="build/report/junit/html"/>
         </junitreport>
 	</target>
+	
+	<target name="compile-demo" depends="build">
+		<javac destdir="build/demo/classes" encoding="UTF-8" source="1.5" target="1.5" debug="true">
+            <classpath>
+                <path refid="demo.path"/>
+            </classpath>
+            <src path="demo/java"/>
+        </javac>
+        <copy todir="build/demo/classes">
+            <fileset dir="demo/conf">
+                <exclude name="**/.svn/**"/>
+            	<exclude name="feed.xml"/>
+            </fileset>
+        </copy>
+    </target>
+	
+	<target name="build-demo" depends="compile-demo">
+		<jar destfile="build/tmp/antupdate.jar">
+			<fileset dir="demo/ant">
+				<exclude name="**/.svn/**"/>
+		    </fileset>
+		</jar>
+		
+		<jar destfile="build/archives/${jar.core.name}-demo.jar">
+            <fileset dir="build/demo/classes">
+            	<exclude name="**/server/**"/>
+            </fileset>
+			<fileset dir="build/tmp">
+				<include name="antupdate.jar"/>
+            </fileset>
+        </jar>
+		
+		<unzip dest="build/tmp/demo_server_expanded">
+            <fileset dir="lib/demo">
+                <include name="*.jar"/>
+            </fileset>
+        </unzip>
+		
+		<jar destfile="build/archives/${jar.core.name}-demo-server.jar" >
+            <fileset dir="build/demo/classes">
+                <include name="**/server/**"/>
+            </fileset>
+			<fileset dir="build/tmp/demo_server_expanded"/>
+			<fileset dir="demo/conf">
+				<include name="feed.xml"/>
+			</fileset>
+			<manifest >
+                <attribute name="Built-By" value="GdTeam"/>
+                <attribute name="Main-Class" value="org.gdteam.appupdater4j.demo.server.Main"/>
+            </manifest>
+        </jar>
+	</target>
+	
 	
 </project>

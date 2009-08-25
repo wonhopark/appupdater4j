@@ -14,7 +14,11 @@ public class VersionHandlerTest {
     public void testBasic() {
         
         VersionHandler notifier = new VersionHandler(this.getClass().getClassLoader().getResource("basictestrss.xml"));
-        notifier.parse();
+        try {
+            notifier.parse();
+        } catch (Exception e) {
+            Assert.fail(e.getMessage());
+        }
         
         Assert.assertTrue("Version list is not empty", notifier.getInstallVersionList("myappid", "1.0.1").isEmpty());
         Assert.assertTrue("Version list is not empty", notifier.getInstallVersionList("myappid", "1.0.0").isEmpty());

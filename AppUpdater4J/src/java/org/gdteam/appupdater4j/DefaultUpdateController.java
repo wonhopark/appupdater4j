@@ -128,6 +128,14 @@ public class DefaultUpdateController implements UpdateController {
     public void restorationFailed(ApplicationVersion applicationVersion, Exception e) {
         this.logTextArea.append("\nRestore failed : " + e.getMessage());
     }
+
+    public void fileDownloadedIsInvalid(ApplicationVersion applicationVersion) {
+        this.logTextArea.append("\nDownloaded file is invalid : ");
+    }
+    
+    public void disposeController() {
+        this.dialog.dispose();
+    }
     
     
 }
