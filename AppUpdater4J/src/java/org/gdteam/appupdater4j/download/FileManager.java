@@ -73,8 +73,11 @@ public class FileManager {
                 }
             }
             
-            if (md5.equals(md5ToCompare)) {
+            if (md5ToCompare.equals(md5)) {
                 return updateFile;
+            } else{
+              //TODO: log
+                System.out.println("Invalid md5 : " + md5ToCompare + "/" + md5);
             }
             
             return null;

@@ -167,7 +167,7 @@ public class UpdateManager implements InstallationListener, FileDownloadListener
                 listener.fileDownloadedIsInvalid(appVersion);
             }
             
-            throw new Exception("Invalid file");
+            throw new Exception("Invalid file : " + downloaded.getPath());
         }
         
         //Second, install

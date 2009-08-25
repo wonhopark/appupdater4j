@@ -1,52 +1,30 @@
 <project name="demo" default="backup">
 
-	<property file="${basedir}/update.properties" prefix="update"/>
+	<property name="installdir" value="${user.dir}" /> 
+	
+	<property file="${installdir}/update.properties" prefix="update"/>
 	<property name="tmpdir" value="${java.io.tmpdir}/${user.name}/${ant.project.name}" />
 	
 	<target name="backup">
 		<echo>Backup</echo>
-		<copy file="${basedir}/demo.jar" tofile="${basedir}/demo-bak.jar" />
+		<copy file="${installdir}/appupdater4j-demo.jar" tofile="${tmpdir}/appupdater4j-demo-bak.jar" />
 	</target>
 
 	<target name="install">
 		<echo>Install</echo>
 		<mkdir dir="${tmpdir}"/>
-		<unjar src="${basedir}/demo.jar" dest="${tmpdir}/demojar" />
+		<!-- Copy demo jar located in update zip -->
 		
-		<propertyfile file="${tmpdir}/nextversion.properties">
-			<entry key="build.number" type="int" operation="+" default="${update.version.build}"/>
-		</propertyfile>
 		
-		<property file="${tmpdir}/nextversion.properties" prefix="next"/>
-		
-		<!-- Update update.properties -->
-		<unjar src="${tmpdir}/demojar/antupdate.zip" dest="${tmpdir}/antupdatezip" />
-		<replace file="${tmpdir}/antupdatezip/update.properties" token="version.build=${update.version.build}" value="version.build=${next.build.number}" />
-		<replaceregexp file="${tmpdir}/antupdatezip/update.properties"
-		               match="(version.build).*"
-		               replace="\1=${next.build.number}" />
-		<replaceregexp file="${tmpdir}/antupdatezip/update.properties"
-		               match="(previous.version).*"
-		               replace="\1=0.0.${update.version.build}" />
-		
-		<delete file="${tmpdir}/demojar/antupdate.zip"/>
-		<zip destfile="${tmpdir}/demojar/antupdate.zip" basedir="${tmpdir}/antupdatezip" />
-		
-		<!-- Update feed URL-->
-		<replaceregexp file="${tmpdir}/demojar"
-		               match="(feed.url=http://localhost:8729/feed?buildnumber).*"
-		               replace="\1=${next.build.number}"/>
-		
-		<!-- Repackage -->
-		<delete file="${basedir}/demo.jar"/>
-		<zip destfile="${basedir}/demo.jar" basedir="${tmpdir}/demojar"/>
+		<delete file="${installdir}/appupdater4j-demo.jar"/>
+		<copy file="${basedir}/appupdater4j-demo-updated.jar" tofile="${installdir}/appupdater4j-demo.jar" />
 		
 	</target>
 
 	<target name="restore">
 		<echo>Restore</echo>
-		<delete file="${basedir}/demo.jar" />
-		<copy file="${basedir}/demo-bak.jar" tofile="${basedir}/demo.jar" />
+		<delete file="${installdir}/demo.jar" />
+		<copy file="${tmpdir}/appupdater4j-demo-bak.jar" tofile="${installdir}/appupdater4j-demo.jar" />
 	</target>
 
 

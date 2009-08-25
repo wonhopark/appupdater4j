@@ -140,41 +140,49 @@
     </target>
 	
 	<target name="build-demo" depends="compile-demo">
-		<jar destfile="build/tmp/antupdate.jar">
-			<fileset dir="demo/ant">
-				<exclude name="**/.svn/**"/>
-		    </fileset>
-		</jar>
 		
 		<jar destfile="build/archives/${jar.core.name}-demo.jar">
             <fileset dir="build/demo/classes">
-            	<exclude name="**/server/**"/>
-            </fileset>
-			<fileset dir="build/tmp">
-				<include name="antupdate.jar"/>
             </fileset>
         </jar>
 		
-		<unzip dest="build/tmp/demo_server_expanded">
-            <fileset dir="lib/demo">
-                <include name="*.jar"/>
-            </fileset>
-        </unzip>
+		<!-- Create updated demo jar -->
+		<copy file="demo/conf/appupdater4j.cfg.properties" tofile="build/tmp/appupdater4j.cfg.properties">
+	    </copy>
 		
-		<jar destfile="build/archives/${jar.core.name}-demo-server.jar" >
+		<replaceregexp file="build/tmp/appupdater4j.cfg.properties"
+		               match="(application.version)=.*"
+		               replace="\1=2.0.0"/>
+		
+		<jar destfile="build/archives/${jar.core.name}-demo-updated.jar">
             <fileset dir="build/demo/classes">
-                <include name="**/server/**"/>
+            	<exclude name="appupdater4j.cfg.properties"/>
             </fileset>
-			<fileset dir="build/tmp/demo_server_expanded"/>
-			<fileset dir="demo/conf">
-				<include name="feed.xml"/>
-			</fileset>
-			<manifest >
-                <attribute name="Built-By" value="GdTeam"/>
-                <attribute name="Main-Class" value="org.gdteam.appupdater4j.demo.server.Main"/>
-            </manifest>
+            <fileset dir="build/tmp">
+            	<include name="appupdater4j.cfg.properties"/>
+            </fileset>
         </jar>
+		
+		<checksum file="demo/ant/update.properties" property="update.properties.md5"/>
+        <concat destfile="build/tmp/${update.properties.md5}.md5" append="false">${update.properties.md5}</concat>
+        
+        <jar destfile="build/tmp/antupdate.jar">
+            <fileset dir="demo/ant">
+                <exclude name="**/.svn/**"/>
+            </fileset>
+            <fileset dir="build/tmp">
+                <include name="${update.properties.md5}.md5"/>
+            </fileset>
+            <fileset dir="build/archives">
+                <include name="${jar.core.name}-demo-updated.jar"/>
+            </fileset>
+        </jar>
+		
 	</target>
 	
+	<target name="distrib" depends="build-demo">
+		<copy file="build/tmp/antupdate.jar" todir="dist/demo" />
+        <copy file="demo/conf/feed.xml" todir="dist/demo" />
+	</target>
 	
 </project>

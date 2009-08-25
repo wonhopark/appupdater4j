@@ -11,6 +11,5 @@
 	<classpathentry kind="lib" path="lib/compile/rome-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/compile/jdom-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/compile/tablelayout.jar"/>
-	<classpathentry kind="lib" path="lib/demo/restlet.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
