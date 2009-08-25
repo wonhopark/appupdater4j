@@ -21,4 +21,9 @@ public interface UpdateController extends UpdateListener {
      */
     public void displayController(String title);
     
+    /**
+     * Dispose controller
+     */
+    public void disposeController();
+    
 }

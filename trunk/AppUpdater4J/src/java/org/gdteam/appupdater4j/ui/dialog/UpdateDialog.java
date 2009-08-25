@@ -541,4 +541,12 @@ public class UpdateDialog extends JFrame implements UpdateController {
     public void restorationFailed(ApplicationVersion applicationVersion, Exception e) {
         JOptionPane.showMessageDialog(this, "La mise a jour peut avoir altere le l'application", "Installation echouee", JOptionPane.ERROR_MESSAGE);
     }
+
+    public void fileDownloadedIsInvalid(ApplicationVersion applicationVersion) {
+        JOptionPane.showMessageDialog(this, "Le fichier telecharge est invalide. Veuillez re-essayer plus tard", "Mise a jour impossible", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void disposeController() {
+        this.dispose();
+    }
 }

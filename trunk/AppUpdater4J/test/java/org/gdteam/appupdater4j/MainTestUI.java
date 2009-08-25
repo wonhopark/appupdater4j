@@ -35,7 +35,7 @@ public class MainTestUI {
         }
         
         main.configureUpdateManager();
-        main.performModalCheck();
+        main.checkInstallAndRunWithDialog();
         
     }
 }

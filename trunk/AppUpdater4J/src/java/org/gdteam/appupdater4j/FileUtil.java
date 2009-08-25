@@ -10,7 +10,9 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
+import java.util.Properties;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 public class FileUtil {
@@ -94,6 +96,35 @@ public class FileUtil {
                     e.printStackTrace();
                 }
             } 
+        }
+    }
+    
+    
+    public static Properties getPropertiesFromFileInZip(File zip, String name) throws ZipException, IOException {
+        ZipFile zipFile = null;
+        try {
+            zipFile = new ZipFile(zip);
+            Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zipFile.entries();
+
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = (ZipEntry) entries.nextElement();
+                if (!entry.isDirectory() && entry.getName().equals(name)) {
+                    Properties ret = new Properties();
+                    ret.load(zipFile.getInputStream(entry));
+                    return ret;
+                }
+            }
+            
+            return null;
+        } finally {
+            if (zipFile != null){
+                try {
+                    zipFile.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } 
+            
         }
     }
 

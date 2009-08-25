@@ -68,8 +68,14 @@ public class UpdateManager implements InstallationListener, FileDownloadListener
     }
     
     public void performCheckForUpdate() {
-        this.versionHandler.parse();
-        this.versionToInstallList =  this.versionHandler.getInstallVersionList(applicationID, currentVersion);
+        try {
+            this.versionHandler.parse();
+            this.versionToInstallList =  this.versionHandler.getInstallVersionList(applicationID, currentVersion);
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.versionToInstallList = new ArrayList<ApplicationVersion>();
+        }
+        
     }
     
     public boolean needUpdate() {
@@ -80,7 +86,13 @@ public class UpdateManager implements InstallationListener, FileDownloadListener
         return this.versionToInstallList;
     }
     
-    public void installAutoUpdate() {
+    /**
+     * Return true, if auto update was performed
+     * @return
+     */
+    public boolean installAutoUpdate() {
+        
+        boolean done = false;
         
         List<UpdateFile> files = this.getFilesToAutomaticallyInstall();
         
@@ -88,12 +100,15 @@ public class UpdateManager implements InstallationListener, FileDownloadListener
             for (UpdateFile updateFile : files) {                
                 try {
                     this.installUpdateFile(updateFile);
+                    done = true;
                 } catch (Exception e) {
                     //TODO: define what to do
                     e.printStackTrace();
                 }
             }
         }
+        
+        return done;
     }
     
     private void installUpdateFile(UpdateFile file) throws Exception {
@@ -148,6 +163,10 @@ public class UpdateManager implements InstallationListener, FileDownloadListener
         UpdateFile updateFile = this.tempFileManager.getUpdateFile(downloaded.getName());
         
         if (!this.tempFileManager.isUpdateFileValid(updateFile, applicationID, Version.createVersion(currentVersion))) {
+            for (UpdateListener listener : this.listeners) {
+                listener.fileDownloadedIsInvalid(appVersion);
+            }
+            
             throw new Exception("Invalid file");
         }
         
