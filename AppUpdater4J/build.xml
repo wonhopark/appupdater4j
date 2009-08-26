@@ -144,6 +144,10 @@
 		<jar destfile="build/archives/${jar.core.name}-demo.jar">
             <fileset dir="build/demo/classes">
             </fileset>
+			<manifest >
+                <attribute name="Built-By" value="GdTeam"/>
+                <attribute name="Main-Class" value="org.gdteam.appupdater4j.demo.Main"/>
+            </manifest>
         </jar>
 		
 		<!-- Create updated demo jar -->
@@ -161,6 +165,10 @@
             <fileset dir="build/tmp">
             	<include name="appupdater4j.cfg.properties"/>
             </fileset>
+			<manifest >
+                <attribute name="Built-By" value="GdTeam"/>
+                <attribute name="Main-Class" value="org.gdteam.appupdater4j.demo.Main"/>
+            </manifest>
         </jar>
 		
 		<checksum file="demo/ant/update.properties" property="update.properties.md5"/>
