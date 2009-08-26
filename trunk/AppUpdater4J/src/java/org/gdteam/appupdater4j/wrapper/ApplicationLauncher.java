@@ -86,7 +86,7 @@ public class ApplicationLauncher {
             e1.printStackTrace();
         }
         
-        URLClassLoader classLoader = new URLClassLoader(classpathURLs);
+        URLClassLoader classLoader = new URLClassLoader(classpathURLs, this.getClass().getClassLoader().getParent());
         
         Wrapper wrapper = new Wrapper(classLoader, this.mainClass, this.args);
         wrapper.start();
