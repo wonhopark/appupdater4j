@@ -34,7 +34,9 @@ public class WrapperTest {
         }
         
         //Check for file
-        Assert.assertTrue("File does not exist : " + testFile, testFile.exists());
+        Assert.assertTrue("Directory does not exist : " + testFile, testFile.exists());
+        
+        Assert.assertTrue("File toto does not exist", new File(testFile, "toto").exists());
         
     }
 }

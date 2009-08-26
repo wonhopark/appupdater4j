@@ -30,7 +30,7 @@ public class Main implements UpdateControllerListener {
         //First get built-in properties from classpath
         this.properties = new Properties();
         try {
-            this.properties.load(this.getClass().getClassLoader().getResourceAsStream("appupdater4j.cfg.properties"));
+            this.properties.load(this.getClass().getClassLoader().getResourceAsStream("config.properties"));
         } catch (IOException e) {
             e.printStackTrace();
         }

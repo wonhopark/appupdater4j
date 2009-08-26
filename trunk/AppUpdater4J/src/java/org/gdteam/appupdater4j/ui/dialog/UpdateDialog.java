@@ -298,10 +298,16 @@ public class UpdateDialog extends JFrame implements UpdateController {
     }
     
     private void startInstallation() {
+        
+        this.timer.cancel();
+        this.timer.purge();
+        this.timer = null;
+        
+        installButton.setEnabled(false);
+        cancelButton.setEnabled(false);
+        
         for (UpdateControllerListener listener : listenerList) {
             listener.startUpdate(UpdateDialog.this, versionList);
-            installButton.setEnabled(false);
-            cancelButton.setEnabled(false);
         }
     }
 

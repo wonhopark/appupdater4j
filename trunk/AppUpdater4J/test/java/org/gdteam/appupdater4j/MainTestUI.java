@@ -32,6 +32,7 @@ public class MainTestUI {
             main.loadProperties(mainArgs);
         } catch (Exception e) {
             e.printStackTrace();
+            System.exit(0);
         }
         
         main.configureUpdateManager();
