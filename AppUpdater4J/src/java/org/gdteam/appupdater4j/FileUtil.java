@@ -15,8 +15,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
+import org.apache.log4j.Logger;
+
 public class FileUtil {
 
+    private static Logger logger = Logger.getLogger(FileUtil.class);
+    
     public static String getMD5(InputStream is) throws IOException {
         try {
             MessageDigest digest = MessageDigest.getInstance("MD5");
@@ -29,19 +33,24 @@ public class FileUtil {
             BigInteger bigInt = new BigInteger(1, md5sum);
             return bigInt.toString(16);
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            logger.error("Unable to get MD5", e);
             return null;
         }
     }
 
     public static void copy(InputStream in, OutputStream out, int blocksize) throws IOException {
-        byte[] b = new byte[blocksize];
-        while (true) {
-            int l = in.read(b);
-            if (l <= 0) {
-                break;
+        try {
+            byte[] b = new byte[blocksize];
+            while (true) {
+                int l = in.read(b);
+                if (l <= 0) {
+                    break;
+                }
+                out.write(b, 0, l);
             }
-            out.write(b, 0, l);
+        } catch (IOException e) {
+            logger.error("Unable to copy file", e);
+            throw e;
         }
     }
     
@@ -88,12 +97,15 @@ public class FileUtil {
                 }
             }
         
+        } catch (Exception e) {
+            logger.error("Unable to unzip file", e);
+            throw e;
         } finally {
             if (zipFile != null){
                 try {
                     zipFile.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("Unable to close zip file", e);
                 }
             } 
         }
@@ -116,6 +128,12 @@ public class FileUtil {
             }
             
             return null;
+        } catch (ZipException ze) {
+            logger.error("Unable to get properties from file in zip", ze);
+            throw ze;
+        } catch (IOException ioe) {
+            logger.error("Unable to get properties from file in zip", ioe);
+            throw ioe;
         } finally {
             if (zipFile != null){
                 try {

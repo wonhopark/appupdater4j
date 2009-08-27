@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.gdteam.appupdater4j.download.FileDownloadHelper;
 import org.gdteam.appupdater4j.download.FileDownloadListener;
 import org.gdteam.appupdater4j.download.FileManager;
@@ -31,6 +32,7 @@ public class UpdateManager implements InstallationListener, FileDownloadListener
     
     private List<UpdateListener> listeners = new ArrayList<UpdateListener>();
     
+    private Logger logger = Logger.getLogger(UpdateManager.class);
     
     /**
      * If update files are in this store, they will be automatically installed
@@ -72,8 +74,8 @@ public class UpdateManager implements InstallationListener, FileDownloadListener
             this.versionHandler.parse();
             this.versionToInstallList =  this.versionHandler.getInstallVersionList(applicationID, currentVersion);
         } catch (Exception e) {
-            e.printStackTrace();
             this.versionToInstallList = new ArrayList<ApplicationVersion>();
+            logger.error("Unable to parse rss feed", e);
         }
         
     }
@@ -103,7 +105,7 @@ public class UpdateManager implements InstallationListener, FileDownloadListener
                     done = true;
                 } catch (Exception e) {
                     //TODO: define what to do
-                    e.printStackTrace();
+                    logger.error("Unable to perform auto installation", e);
                 }
             }
         }
@@ -139,8 +141,7 @@ public class UpdateManager implements InstallationListener, FileDownloadListener
                         downloadAndInstallAppVersion(applicationVersion);
                     }
                 }catch (Exception e) {
-                    // TODO: handle exception
-                    e.printStackTrace();
+                    logger.error("Error during update", e);
                 }
                 
                 for (UpdateListener listener : listeners) {

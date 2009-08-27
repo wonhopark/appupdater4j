@@ -1,7 +1,6 @@
 package org.gdteam.appupdater4j.install;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -9,12 +8,15 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
+import org.apache.log4j.Logger;
 import org.gdteam.appupdater4j.FileUtil;
 import org.gdteam.appupdater4j.model.UpdateFile;
 
 public class InstallationHelper {
 
     private List<InstallationListener> listeners = new ArrayList<InstallationListener>();
+    
+    private Logger logger = Logger.getLogger(InstallationHelper.class);
     
     /**
      * Install update from zip file
@@ -23,6 +25,8 @@ public class InstallationHelper {
      * @throws UpdateException
      */
     public void installUpdate(UpdateFile zip) throws Exception {
+        
+        logger.info("Start installation from " + zip.getPath());
         
         String dirName = zip.getName().split(".zip")[0];
         StringBuilder dir = new StringBuilder(System.getProperty("java.io.tmpdir")).append("gdteam/").append(dirName).append("/");
@@ -45,17 +49,18 @@ public class InstallationHelper {
             for (InstallationListener listener : listeners) {
                 listener.installationEnded(zip);
             }
+            logger.info("Installation successfully done");
         } catch (Exception e) {
-            //TODO: log
-            e.printStackTrace();
             if (e instanceof InstallationException && ((InstallationException) e).getTarget().equals(AntTargetExecutionRunnable.TARGET_RESTORE)) {
                 for (InstallationListener listener : listeners) {
                     listener.restorationFailed(zip, e);
                 }
+                logger.error("Installation and restoration failed", e);
             } else {
                 for (InstallationListener listener : listeners) {
                     listener.installationFailed(zip, e);
                 }
+                logger.error("Installation failed", e);
             }
             
             
