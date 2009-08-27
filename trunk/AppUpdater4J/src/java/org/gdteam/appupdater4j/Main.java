@@ -11,6 +11,8 @@ import java.util.Properties;
 
 import javax.swing.ImageIcon;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.gdteam.appupdater4j.model.ApplicationVersion;
 import org.gdteam.appupdater4j.model.Version;
 import org.gdteam.appupdater4j.os.macosx.ReflectiveApplication;
@@ -18,10 +20,17 @@ import org.gdteam.appupdater4j.wrapper.ApplicationLauncher;
 
 public class Main implements UpdateControllerListener {
     
+    private static Logger logger = Logger.getLogger(Main.class);
+    
     private File propertyFile;
     private Properties properties = null;
     private UpdateManager updateManager = null;
     private ApplicationLauncher applicationLauncher;
+    
+    public Main() {
+        //Configure log4j
+        PropertyConfigurator.configure(this.getClass().getClassLoader().getResource("log4j.properties"));
+    }
     
     public void loadProperties(String[] args) throws Exception {
         
@@ -32,11 +41,10 @@ public class Main implements UpdateControllerListener {
         try {
             this.properties.load(this.getClass().getClassLoader().getResourceAsStream("config.properties"));
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Unable to load properties from config.properties", e);
         }
         
         Properties userSpecifiedProperties = null;
-        
         
         //Check for -Dorg.gdteam.appupdater4j.propertyfile
         if (System.getProperty("org.gdteam.appupdater4j.propertyfile") != null) {
@@ -129,11 +137,18 @@ public class Main implements UpdateControllerListener {
     }
     
     public void runApplication() {
+        logger.info("Run wrapped application");
         try {
             this.applicationLauncher.extractManifestInfo();
+            
+        } catch (Exception e) {
+            logger.error("Unable to extract data form jar manifest", e);
+            System.exit(0);
+        }
+        try {
             this.applicationLauncher.run();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Unable to start wrapped application", e);
             System.exit(0);
         }
         
@@ -148,7 +163,7 @@ public class Main implements UpdateControllerListener {
         try {
             application.loadProperties(args);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Cannot load AppUpdater4j properties", e);
             System.exit(0);
         }
         

@@ -12,11 +12,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 public class FileDownload {
 
     private URL source;
     private File dest;
     private List<FileDownloadListener> listeners;
+    
+    private static Logger logger = Logger.getLogger(FileDownload.class);
 
     public FileDownload(URL src, File dest) {
         this.source = src;
@@ -25,6 +29,9 @@ public class FileDownload {
     }
 
     public void performDownload() throws Exception{
+        
+        logger.info("Start download of " + this.source);
+        
         OutputStream out = null;
         URLConnection connection = null;
         InputStream in = null;
@@ -85,24 +92,29 @@ public class FileDownload {
                 listener.downloadDone(this.source, this.dest);
             }
             
+            logger.info("File successfully downloaded");
+            
         } catch (Exception e) {
             for (FileDownloadListener listener : this.listeners) {
                 listener.downloadFailed(this.source);
-            }            
+            }  
+            
+            logger.error("Error during download", e);
+            
             throw e;
         }finally {
             if (out != null) {
                 try {
                     out.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("Unable to close output stream", e);
                 }
             }
             if (in != null) {
                 try {
                     in.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("Unable to close input stream", e);
                 }
             }
 

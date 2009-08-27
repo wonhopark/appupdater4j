@@ -172,7 +172,10 @@ public class UpdateDialog extends JFrame implements UpdateController {
         this.updateTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
             public void valueChanged(ListSelectionEvent e) {
-                displaySelectedDescription();
+                if (!e.getValueIsAdjusting()) {
+                    displaySelectedDescription();
+                }
+                
             }
             
         });
@@ -441,7 +444,9 @@ public class UpdateDialog extends JFrame implements UpdateController {
         if (selectedRowIndex != -1) {
             ApplicationVersion appVersion = this.getApplicationVersion(selectedRowIndex);
             
-            this.descriptionArea.setText("<html>" + appVersion.getDescription(new Locale(Locale.getDefault().getLanguage())) + "</html>");
+            String text = appVersion.getDescription(new Locale(Locale.getDefault().getLanguage())).replace("<br />", "<br></br>").replace("<br/>", "<br></br>");
+            
+            this.descriptionArea.setText("<html>" + text + "</html>");
         }
     }
     

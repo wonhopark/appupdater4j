@@ -12,6 +12,7 @@ import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.log4j.Logger;
 import org.gdteam.appupdater4j.FileUtil;
 import org.gdteam.appupdater4j.model.UpdateFile;
 import org.gdteam.appupdater4j.model.Version;
@@ -26,6 +27,8 @@ public class FileManager {
         }
         
     };
+    
+    private Logger logger = Logger.getLogger(FileManager.class);
     
     private File fileStore;
 
@@ -76,20 +79,20 @@ public class FileManager {
             if (md5ToCompare.equals(md5)) {
                 return updateFile;
             } else{
-              //TODO: log
-                System.out.println("Invalid md5 : " + md5ToCompare + "/" + md5);
+                logger.warn("Zip file is invalid because md5 failed : " + md5ToCompare + " vs " + md5);
             }
             
             return null;
             
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error during zip read", e);
             return null;
         } finally {
             if (zipFile != null) {
                 try {
                     zipFile.close();
                 } catch (IOException e) {
+                    logger.error("Unable to close zip file", e);
                     e.printStackTrace();
                 }
             }

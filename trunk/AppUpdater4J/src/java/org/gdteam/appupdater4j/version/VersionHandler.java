@@ -1,6 +1,5 @@
 package org.gdteam.appupdater4j.version;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,8 +8,6 @@ import java.util.List;
 import org.gdteam.appupdater4j.model.Application;
 import org.gdteam.appupdater4j.model.ApplicationVersion;
 import org.gdteam.appupdater4j.version.feed.RSSReader;
-
-import com.sun.syndication.io.FeedException;
 
 public class VersionHandler {
 
