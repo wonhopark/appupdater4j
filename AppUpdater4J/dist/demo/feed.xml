@@ -13,8 +13,8 @@
             <au:major>2</au:major>
             <au:minor>0</au:minor>
             <au:build>0</au:build>
-            <au:description lang="fr">&lt;b&gt;Mise &#224; jour 2.0.0 d'AppUpdater Demo&lt;/b&gt;&lt;br/&gt;La mise &#224; jour de 2.0.0 est recommand&#233;e pour tous les clients d'AppUpdater Demo et r&#233;sout plusieurs probl&#232;mes relatifs &#224; la fiabilit&#233; et la s&#233;curit&#233; dans son ensemble</au:description>
-            <au:description lang="en">&lt;b&gt;AppUpdater Demo 2.0.0 Update&lt;/b&gt;&lt;s/&gt;The AppUpdater Demo 2.0.0 Update is recommended for AppUpdater Demo users and includes general operating system fixes that enhance the stability, compatibility and security</au:description>
+            <au:description lang="fr">&lt;b&gt;Mise &#224; jour 2.0.0 d'AppUpdater Demo&lt;/b&gt;&lt;br/&gt;;&lt;br/&gt;La mise &#224; jour de 2.0.0 est recommand&#233;e pour tous les clients d'AppUpdater Demo et r&#233;sout plusieurs probl&#232;mes relatifs &#224; la fiabilit&#233; et la s&#233;curit&#233; dans son ensemble</au:description>
+            <au:description lang="en">&lt;b&gt;AppUpdater Demo 2.0.0 Update&lt;/b&gt;;&lt;br/&gt;;&lt;br/&gt;The AppUpdater Demo 2.0.0 Update is recommended for AppUpdater Demo users and includes general operating system fixes that enhance the stability, compatibility and security</au:description>
             <au:size>11000</au:size>
         </item>
     </channel>
