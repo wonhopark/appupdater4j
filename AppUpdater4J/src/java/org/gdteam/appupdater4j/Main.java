@@ -2,9 +2,7 @@ package org.gdteam.appupdater4j;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -20,9 +18,19 @@ import org.gdteam.appupdater4j.wrapper.ApplicationLauncher;
 
 public class Main implements UpdateControllerListener {
     
+    //Possible system properties
+    public static final String SYSTEM_PROPERTY_FILE_KEY = "org.gdteam.appupdater4j.propertyfile";
+    public static final String SYSTEM_JAR_FILE_KEY = "org.gdteam.appupdater4j.jarfile";
+    
+    //Properties which can be found in property file or in jar file
+    public static final String PROPERTY_JAR_FILE = "jar.file";
+    public static final String PROPERTY_DOCK_ICON_PATH = "dockicon.path";
+    public static final String PROPERTY_DIALOG_CLASS = "dialog.class";
+    public static final String PROPERTY_DIALOG_TITLE = "dialog.title";
+    public static final String PROPERTY_UPDATE_MODE = "update.mode";    
+    
     private static Logger logger = Logger.getLogger(Main.class);
     
-    private File propertyFile;
     private Properties properties = null;
     private UpdateManager updateManager = null;
     private ApplicationLauncher applicationLauncher;
@@ -47,24 +55,24 @@ public class Main implements UpdateControllerListener {
         Properties userSpecifiedProperties = null;
         
         //Check for -Dorg.gdteam.appupdater4j.propertyfile
-        if (System.getProperty("org.gdteam.appupdater4j.propertyfile") != null) {
+        if (System.getProperty(SYSTEM_PROPERTY_FILE_KEY) != null) {
             userSpecifiedProperties = new Properties();
-            userSpecifiedProperties.load(new FileInputStream(System.getProperty("org.gdteam.appupdater4j.propertyfile")));
+            userSpecifiedProperties.load(new FileInputStream(System.getProperty(SYSTEM_PROPERTY_FILE_KEY)));
         } else {
             //No -Dorg.gdteam.appupdater4j.propertyfile
             //Check for properties in -Dorg.gdteam.appupdater4j.jarfile
-            if (System.getProperty("org.gdteam.appupdater4j.jarfile") != null) {
-                File zip = new File(System.getProperty("org.gdteam.appupdater4j.jarfile"));
+            if (System.getProperty(SYSTEM_JAR_FILE_KEY) != null) {
+                File zip = new File(System.getProperty(SYSTEM_JAR_FILE_KEY));
                 
                 if (!zip.exists() || !zip.isFile()) {
                     throw new Exception("Cannot find jar file : " + zip.getPath());
                 }
 
                 userSpecifiedProperties = FileUtil.getPropertiesFromFileInZip(zip, "appupdater4j.cfg.properties");
-                userSpecifiedProperties.put("org.gdteam.appupdater4j.jarfile", zip.getPath());
+                userSpecifiedProperties.put(SYSTEM_JAR_FILE_KEY, zip.getPath());
                 
             } else {
-                StringBuilder message = new StringBuilder("Usage : java -Dorg.gdteam.appupdater4j.jarfile=<your_application_jar> -jar appupdater4j.jar\n");
+                StringBuilder message = new StringBuilder("Usage : java -D" + SYSTEM_JAR_FILE_KEY + "=<your_application_jar> -jar appupdater4j.jar\n");
                 message.append("      - <your_application_jar> : path to your wrapped application jar which contains appupdater4j.cfg.properties");
                 throw new Exception(message.toString());
             }
@@ -77,7 +85,7 @@ public class Main implements UpdateControllerListener {
         }
         
         //Configure dock icon
-        String dockIconPath = this.properties.getProperty("dockicon.path");
+        String dockIconPath = this.properties.getProperty(PROPERTY_DOCK_ICON_PATH);
         if (dockIconPath == null) {
             ReflectiveApplication.getApplication().setDockIconImage(new ImageIcon(this.getClass().getClassLoader().getResource("refresh-128.png")).getImage());
         } else  {
@@ -91,7 +99,13 @@ public class Main implements UpdateControllerListener {
     }
     
     public void configureApplicationLauncher(){
-        this.applicationLauncher = new ApplicationLauncher(new File(this.properties.getProperty("org.gdteam.appupdater4j.jarfile")), new String[0]);
+        String jarFile = this.properties.getProperty(SYSTEM_JAR_FILE_KEY);
+        
+        if (jarFile == null) {
+            jarFile = this.properties.getProperty(PROPERTY_JAR_FILE);
+        }
+        
+        this.applicationLauncher = new ApplicationLauncher(new File(jarFile), new String[0]);
     }
     
     /**
@@ -99,19 +113,17 @@ public class Main implements UpdateControllerListener {
      * @return installed version
      */
     public Version installAutoUpdate() {
+        
+        logger.info("Check for auto update");
+        
         Version installedVersion = null;
         if (this.updateManager.installAutoUpdate()) {
             installedVersion = Version.createVersion(this.updateManager.getCurrentVersion());
             
-            this.properties.put("application.version", installedVersion.toString());
-            FileOutputStream out = null;
-            try {
-                out = new FileOutputStream(this.propertyFile);
-                this.properties.store(out, "Generated by AppUpdater4J at " + new Date().toString());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            this.properties.put(UpdateManager.PROPERTY_APPLICATION_VERSION_KEY, installedVersion.toString());
         }
+        
+        logger.info("Auto update performed : " + String.valueOf(installedVersion != null));
         
         return installedVersion;
     }
@@ -119,21 +131,29 @@ public class Main implements UpdateControllerListener {
     /**
      * Check for update and install update if necessary. Wait for the end of this method to start application
      */
-    public void checkInstallAndRunWithDialog() {
-        this.updateManager.performCheckForUpdate();
+    public void checkRemoteUpdateAndRun() {
+        String updateMode = this.properties.getProperty(PROPERTY_UPDATE_MODE);
         
-        if (this.updateManager.needUpdate()) {
-            UpdateController controller = UpdateControllerFactory.getUpdateController((String) this.properties.get("dialog.class"));
-            controller.addUpdateControllerListener(this);
+        logger.info("Update mode is : " + updateMode);
+        
+        if (updateMode.equals("default")) {
+            this.updateManager.performCheckForUpdate();
             
-            this.updateManager.addUpdateListener(controller);
-            
-            controller.setVersionToInstall(this.updateManager.getVersionToInstallList());
-            controller.displayController(this.properties.getProperty("dialog.title"));
-        } else {
+            if (this.updateManager.needUpdate()) {
+                UpdateController controller = UpdateControllerFactory.getUpdateController((String) this.properties.get(PROPERTY_DIALOG_CLASS));
+                controller.addUpdateControllerListener(this);
+                
+                this.updateManager.addUpdateListener(controller);
+                
+                controller.setVersionToInstall(this.updateManager.getVersionToInstallList());
+                controller.displayController(this.properties.getProperty(PROPERTY_DIALOG_TITLE));
+            } else {
+                this.runApplication();
+            }
+        } else if (updateMode.equals("download_only")) {
+            this.updateManager.checkAndDownloadASync();
             this.runApplication();
         }
-        
     }
     
     public void runApplication() {
@@ -173,8 +193,8 @@ public class Main implements UpdateControllerListener {
         Version installedVersion = application.installAutoUpdate();
         
         if (installedVersion == null) {
-            //No autoupdate
-            application.checkInstallAndRunWithDialog();
+            //No autoupdate performed...
+            application.checkRemoteUpdateAndRun();
         } else {
             application.runApplication();
         }

@@ -18,9 +18,15 @@ import org.gdteam.appupdater4j.model.UpdateFile;
 import org.gdteam.appupdater4j.model.Version;
 import org.gdteam.appupdater4j.version.VersionHandler;
 
-public class UpdateManager implements InstallationListener, FileDownloadListener{
+public class UpdateManager implements InstallationListener, FileDownloadListener {
     
-    public static final String PROPERTY_PREFIX = "org.gdteam.appupdater4j";
+    //Properties put in system when update is available (in download_only mode)
+    public static final String SYSTEM_UPDATE_AVAILABLE_KEY = "org.gdteam.appupdater4j.update.available";
+    public static final String SYSTEM_UPDATE_FILE_DIR_KEY = "org.gdteam.appupdater4j.update.file.dir";
+    
+    public static final String PROPERTY_APPLICATION_ID_KEY = "application.id";
+    public static final String PROPERTY_APPLICATION_VERSION_KEY = "application.version";
+    public static final String PROPERTY_FEED_URL_KEY = "feed.url";
 
     private String applicationID;
     private String currentVersion;
@@ -48,10 +54,10 @@ public class UpdateManager implements InstallationListener, FileDownloadListener
      * @param properties
      */
     public void configure(Properties props) {
-        this.applicationID = props.getProperty("application.id");
-        this.currentVersion = props.getProperty("application.version");
+        this.applicationID = props.getProperty(PROPERTY_APPLICATION_ID_KEY);
+        this.currentVersion = props.getProperty(PROPERTY_APPLICATION_VERSION_KEY);
         try {
-            this.versionHandler = new VersionHandler(new URL(props.getProperty("feed.url")));
+            this.versionHandler = new VersionHandler(new URL(props.getProperty(PROPERTY_FEED_URL_KEY)));
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -61,7 +67,13 @@ public class UpdateManager implements InstallationListener, FileDownloadListener
         
         this.autoFileManager = new FileManager(new File(System.getProperty("user.dir")));
         
-        File tempDir = new File(System.getProperty("java.io.tmpdir"), "appupdater4j");
+        File tempDir = new File(System.getProperty("java.io.tmpdir"), "appupdater4j-" + this.applicationID);
+        tempDir.mkdirs();
+        
+        //Delete all old files
+        for (File toDelete : tempDir.listFiles()) {
+            toDelete.delete();
+        }
         
         this.fileDownloadHelper = new FileDownloadHelper(tempDir);
         this.fileDownloadHelper.addFileDownloadListener(this);
@@ -112,6 +124,35 @@ public class UpdateManager implements InstallationListener, FileDownloadListener
         
         return done;
     }
+    
+    /**
+     * Check for update and download update files. If update is needed, put some properties in system
+     */
+    public void checkAndDownloadASync() {
+        Thread thread = new Thread(new Runnable(){
+            public void run() {
+                performCheckForUpdate();
+                if (needUpdate()) {
+                    try {
+                        for (ApplicationVersion appVersion : versionToInstallList) {
+                            File dest = new File(tempFileManager.getFileStore(), System.currentTimeMillis() + ".zip");
+                            
+                            fileDownloadHelper.downloadFile(new URL(appVersion.getUpdateURL()), dest);
+                        }
+                        
+                        System.setProperty(SYSTEM_UPDATE_AVAILABLE_KEY, "true");
+                        System.setProperty(SYSTEM_UPDATE_FILE_DIR_KEY, tempFileManager.getFileStore().getPath());
+                        
+                    } catch (Exception e) {
+                        logger.error("Unable to download update files", e);
+                    }
+                }
+            }
+        });
+        
+        thread.start();
+    }
+    
     
     private void installUpdateFile(UpdateFile file) throws Exception {
         this.installationHelper.installUpdate(file);
