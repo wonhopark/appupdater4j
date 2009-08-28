@@ -3,7 +3,6 @@ package org.gdteam.appupdater4j.version;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.gdteam.appupdater4j.model.Application;

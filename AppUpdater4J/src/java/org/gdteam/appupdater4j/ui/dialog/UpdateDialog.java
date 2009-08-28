@@ -13,7 +13,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,6 +45,7 @@ import javax.swing.table.TableColumnModel;
 
 import org.gdteam.appupdater4j.UpdateController;
 import org.gdteam.appupdater4j.UpdateControllerListener;
+import org.gdteam.appupdater4j.i18n.I18nHelper;
 import org.gdteam.appupdater4j.model.ApplicationVersion;
 
 public class UpdateDialog extends JFrame implements UpdateController {
@@ -109,7 +109,7 @@ public class UpdateDialog extends JFrame implements UpdateController {
         gbc.gridheight = 1;
         gbc.insets = new Insets(20, 0, 5, 20);
         
-        JLabel title = new JLabel("Nouvelle(s) version(s) disponible(s)");
+        JLabel title = new JLabel(I18nHelper.getInstance().getString("dialog.version.available"));
         title.setFont(title.getFont().deriveFont(Font.BOLD));
         
         mainPane.add(title, gbc);
@@ -119,7 +119,7 @@ public class UpdateDialog extends JFrame implements UpdateController {
         gbc.anchor = GridBagConstraints.NORTHWEST;
         gbc.insets = new Insets(5, 0, 10, 20);
         
-        mainPane.add(new JLabel("<html>L'installation de ce logiciel peut prendre quelques temps. Si vous n'etes pas pret a l'effectuer immediatement, vous pouvez selectionner le bouton \"Plus tard\".</html>"), gbc);
+        mainPane.add(new JLabel("<html>" + I18nHelper.getInstance().getString("dialog.warning") + "</html>"), gbc);
         
         this.getContentPane().add(mainPane);
         
@@ -188,13 +188,13 @@ public class UpdateDialog extends JFrame implements UpdateController {
         stateColumn.setMinWidth(20);
         
         TableColumn versionColumn = columnModel.getColumn(1);
-        versionColumn.setHeaderValue("Version");
+        versionColumn.setHeaderValue(I18nHelper.getInstance().getString("dialog.version"));
         
         TableColumn sizeColumn = columnModel.getColumn(2);
-        sizeColumn.setHeaderValue("Taille");
+        sizeColumn.setHeaderValue(I18nHelper.getInstance().getString("dialog.size"));
         
         TableColumn downloadColumn = columnModel.getColumn(3);
-        downloadColumn.setHeaderValue("Telechargement/Installation");
+        downloadColumn.setHeaderValue(I18nHelper.getInstance().getString("dialog.download.install"));
         downloadColumn.setCellRenderer(new UpdateActionCellRenderer());
         
         this.descriptionArea = new JEditorPane("text/html", "");
@@ -210,7 +210,7 @@ public class UpdateDialog extends JFrame implements UpdateController {
         gbc.weighty = 0;
         gbc.insets = new Insets(10, 20, 20, 20);
         
-        JLabel remark = new JLabel("<html>Remarque : l’utilisation de ce logiciel est soumise a l’acceptation du ou des contrats de licence de logiciel fourni(s) avec le logiciel en cours de mise a jour.</html>");
+        JLabel remark = new JLabel("<html>" + I18nHelper.getInstance().getString("dialog.note") + "</html>");
         
         mainPane.add(remark, gbc);
         
@@ -219,7 +219,7 @@ public class UpdateDialog extends JFrame implements UpdateController {
         gbc.anchor = GridBagConstraints.EAST;
         gbc.insets = new Insets(10, 20, 20, 20);
         
-        this.installButton = new JButton("Installer");
+        this.installButton = new JButton(I18nHelper.getInstance().getString("dialog.install"));
         this.installButton.addKeyListener(new KeyAdapter(){
             
             @Override
@@ -230,8 +230,8 @@ public class UpdateDialog extends JFrame implements UpdateController {
             }
             
         });
-        this.cancelButton = new JButton("Plus tard");
-        this.continueButton = new JButton("Continuer");
+        this.cancelButton = new JButton(I18nHelper.getInstance().getString("dialog.later"));
+        this.continueButton = new JButton(I18nHelper.getInstance().getString("dialog.continue"));
         
         ActionListener closeListener = new ActionListener() {
 
@@ -345,7 +345,7 @@ public class UpdateDialog extends JFrame implements UpdateController {
             Long fileSize = applicationVersion.getFileSize();
             String fileSizeToDisplay = "";
             if (fileSize != null) {
-                fileSizeToDisplay = this.getHumanFriendlySize(fileSize.doubleValue());
+                fileSizeToDisplay = I18nHelper.getInstance().getHumanFriendlySize(fileSize.doubleValue());
             }
             
             UpdateAction updateAction = new UpdateAction();
@@ -366,55 +366,8 @@ public class UpdateDialog extends JFrame implements UpdateController {
         model.fireTableDataChanged();
     }
     
-    private String getHumanFriendlySize(double length) {
-        String[] sizes = {"B", "KB", "MB", "GB"};
-        return getHumanFriendlySizeRec(length, sizes, 0);
-    }
-    
-    private String getHumanFriendlySizeRec(double length, String[] sizes, int index) {
-        DecimalFormat df = new DecimalFormat("#.#");
-        if (length <= 1024) {
-            return df.format(length) + " " + sizes[index];
-        } else {
-            //length > 1024
-            double newLength = length / 1024;
-            if (sizes.length > index) {
-                //there are available sizes... Continue
-                return getHumanFriendlySizeRec(newLength, sizes, index + 1);
-            } else {
-                //No avaialabe size.
-                return df.format(newLength) + " " + sizes[index];
-            }
-        }
-    }
-    
     private UpdateAction getUploadActionData(ApplicationVersion appVersion) {
         return (UpdateAction) this.updateTable.getModel().getValueAt(this.appVersionTableIndexes.get(appVersion), UPLOAD_STATE_COLUMN);
-    }
-    
-    private String getCountDownText(long duration) {
-        long hour = duration / 3600;
-        long min = (duration - (hour * 3600)) / 60;
-        long sec = duration - (hour * 3600) - (min * 60);
-
-        StringBuilder res = new StringBuilder();
-        if (hour > 0){
-            res.append(hour).append(":");
-        }
-        
-        if (min < 10){
-            res.append("0").append(min).append(":");
-        } else {
-            res.append(min).append(":");
-        }
-        
-        if (sec < 10){
-            res.append("0").append(sec).append(" s");
-        } else {
-            res.append(sec).append(" s");
-        }
-        
-        return res.toString();
     }
 
     private class DownloadTask extends TimerTask {
@@ -427,7 +380,7 @@ public class UpdateDialog extends JFrame implements UpdateController {
                 elapsedTime--;
                 
                 UpdateAction action = getUploadActionData(appVersion);
-                action.setDescription(getCountDownText(elapsedTime));
+                action.setDescription(I18nHelper.getInstance().getCountDownText(elapsedTime));
                 ((DefaultTableModel) updateTable.getModel()).fireTableDataChanged();
             }
         }
@@ -468,7 +421,7 @@ public class UpdateDialog extends JFrame implements UpdateController {
         this.downloading = false;
         
         UpdateAction action = this.getUploadActionData(applicationVersion);
-        action.setDescription("Telecharge");
+        action.setDescription(I18nHelper.getInstance().getString("dialog.downloaded"));
         action.setProgression(100);
         ((DefaultTableModel) this.updateTable.getModel()).fireTableDataChanged();
     }
@@ -477,7 +430,7 @@ public class UpdateDialog extends JFrame implements UpdateController {
         this.downloading = false;
         
         UpdateAction action = this.getUploadActionData(applicationVersion);
-        action.setDescription("Erreur");
+        action.setDescription(I18nHelper.getInstance().getString("dialog.error"));
         ((DefaultTableModel) this.updateTable.getModel()).fireTableDataChanged();
     }
 
@@ -490,7 +443,7 @@ public class UpdateDialog extends JFrame implements UpdateController {
         this.elapsedTimeTask.appVersion = applicationVersion;
         
         UpdateAction action = this.getUploadActionData(applicationVersion);
-        action.setDescription("Telechargement");
+        action.setDescription(I18nHelper.getInstance().getString("dialog.downloading"));
         action.setProgression(0);
         ((DefaultTableModel) this.updateTable.getModel()).fireTableDataChanged();
     }
@@ -509,13 +462,13 @@ public class UpdateDialog extends JFrame implements UpdateController {
         this.elapsedTime = (this.currentFileSize - this.currentDownloadedSize) / size;
         
         UpdateAction action = this.getUploadActionData(applicationVersion);
-        action.setDescription(this.getCountDownText(elapsedTime));
+        action.setDescription(I18nHelper.getInstance().getCountDownText(elapsedTime));
         ((DefaultTableModel) this.updateTable.getModel()).fireTableDataChanged();
     }
 
     public void installationEnded(ApplicationVersion applicationVersion) {
         UpdateAction action = this.getUploadActionData(applicationVersion);
-        action.setDescription("Installe");
+        action.setDescription(I18nHelper.getInstance().getString("dialog.installing"));
         action.setIndeterminate(false);
         
         int rowIndex = this.appVersionTableIndexes.get(applicationVersion);
@@ -526,7 +479,7 @@ public class UpdateDialog extends JFrame implements UpdateController {
 
     public void installationFailed(ApplicationVersion applicationVersion, Exception e) {
         UpdateAction action = this.getUploadActionData(applicationVersion);
-        action.setDescription("Erreur");
+        action.setDescription(I18nHelper.getInstance().getString("dialog.error"));
         action.setIndeterminate(false);
         
         int rowIndex = this.appVersionTableIndexes.get(applicationVersion);
@@ -534,7 +487,7 @@ public class UpdateDialog extends JFrame implements UpdateController {
         
         ((DefaultTableModel) this.updateTable.getModel()).fireTableDataChanged();
         
-        JOptionPane.showMessageDialog(this, "La mise a jour n'est pas complete", "Installation echouee", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, I18nHelper.getInstance().getString("dialog.update.installation.failed"), I18nHelper.getInstance().getString("dialog.update.failed"), JOptionPane.ERROR_MESSAGE);
     }
 
     public void installationStarted(ApplicationVersion applicationVersion, String basedir) {
@@ -550,11 +503,11 @@ public class UpdateDialog extends JFrame implements UpdateController {
     }
 
     public void restorationFailed(ApplicationVersion applicationVersion, Exception e) {
-        JOptionPane.showMessageDialog(this, "La mise a jour peut avoir altere le l'application", "Installation echouee", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, I18nHelper.getInstance().getString("dialog.update.restoration.failed"), I18nHelper.getInstance().getString("dialog.update.failed"), JOptionPane.ERROR_MESSAGE);
     }
 
     public void fileDownloadedIsInvalid(ApplicationVersion applicationVersion) {
-        JOptionPane.showMessageDialog(this, "Le fichier telecharge est invalide. Veuillez re-essayer plus tard", "Mise a jour impossible", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, I18nHelper.getInstance().getString("dialog.download.failed"), I18nHelper.getInstance().getString("dialog.update.failed"), JOptionPane.ERROR_MESSAGE);
     }
 
     public void disposeController() {
