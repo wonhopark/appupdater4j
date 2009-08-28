@@ -8,7 +8,6 @@ import java.util.Locale;
 
 import org.gdteam.appupdater4j.model.Application;
 import org.gdteam.appupdater4j.model.ApplicationVersion;
-import org.gdteam.appupdater4j.model.Version;
 import org.jdom.Element;
 
 import com.sun.syndication.feed.synd.SyndEntry;

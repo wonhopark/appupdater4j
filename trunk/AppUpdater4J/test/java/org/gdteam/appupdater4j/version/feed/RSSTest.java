@@ -8,7 +8,6 @@ import junit.framework.Assert;
 
 import org.gdteam.appupdater4j.model.Application;
 import org.gdteam.appupdater4j.model.ApplicationVersion;
-import org.gdteam.appupdater4j.version.feed.RSSReader;
 import org.junit.Test;
 
 import com.sun.syndication.feed.synd.SyndEntry;
