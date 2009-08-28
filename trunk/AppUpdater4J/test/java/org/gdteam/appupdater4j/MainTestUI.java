@@ -37,7 +37,7 @@ public class MainTestUI {
         
         main.configureUpdateManager();
         //main.configureApplicationLauncher();
-        main.checkInstallAndRunWithDialog();
+        main.checkRemoteUpdateAndRun();
         
     }
 }

@@ -174,7 +174,7 @@
 		<checksum file="demo/ant/update.properties" property="update.properties.md5"/>
         <concat destfile="build/tmp/${update.properties.md5}.md5" append="false">${update.properties.md5}</concat>
         
-        <jar destfile="build/tmp/antupdate.jar">
+        <zip destfile="build/tmp/antupdate.zip">
             <fileset dir="demo/ant">
                 <exclude name="**/.svn/**"/>
             </fileset>
@@ -184,12 +184,12 @@
             <fileset dir="build/archives">
                 <include name="${jar.core.name}-demo-updated.jar"/>
             </fileset>
-        </jar>
+        </zip>
 		
 	</target>
 	
 	<target name="distrib" depends="build-demo">
-		<copy file="build/tmp/antupdate.jar" todir="dist/demo" />
+		<copy file="build/tmp/antupdate.zip" todir="dist/demo" />
         <copy file="demo/conf/feed.xml" todir="dist/demo" />
 	</target>
 	
