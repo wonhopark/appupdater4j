@@ -3,6 +3,7 @@ package org.gdteam.appupdater4j.version;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.gdteam.appupdater4j.model.Application;
@@ -48,6 +49,29 @@ public class VersionHandler {
         
         Collections.sort(versionToInstall);
         
-        return versionToInstall;
+        //Do not return version after a reboot one
+        int firstIndexOfRebootVersion = this.getFirstIndexOfRebootVersion(versionToInstall);
+        
+        if (firstIndexOfRebootVersion == -1) {
+            return versionToInstall;
+        } else {
+            return versionToInstall.subList(0, firstIndexOfRebootVersion + 1);
+        }
+    }
+    
+    private int getFirstIndexOfRebootVersion(List<ApplicationVersion> versionToInstall) {
+        
+        int i = 0;
+        
+        for (ApplicationVersion applicationVersion : versionToInstall) {
+            
+            if (applicationVersion.isNeedReboot()) {
+                return i;
+            }
+            
+            i++;
+        }
+        
+        return -1;
     }
 }

@@ -131,7 +131,7 @@ public class UpdateManager implements InstallationListener, FileDownloadListener
     public void checkAndDownloadASync() {
         Thread thread = new Thread(new Runnable(){
             public void run() {
-                performCheckForUpdate();
+                performCheckForUpdate();     
                 if (needUpdate()) {
                     try {
                         for (ApplicationVersion appVersion : versionToInstallList) {
