@@ -4,9 +4,8 @@
 
 This page provides everything you'll need to know about getting started with AppUpdater4J
 
-= Details =
+== Creating update file ==
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+== Checking for ==
+
+== Wrapping your application ==
