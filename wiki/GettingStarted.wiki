@@ -1,4 +1,4 @@
-# provides everything you'll need to know about getting started with AppUpdater4J
+#summary provides everything you'll need to know about getting started with AppUpdater4J
 
 = Getting started =
 
