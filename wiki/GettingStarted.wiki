@@ -6,6 +6,6 @@ This page provides everything you'll need to know about getting started with App
 
 == Creating update file ==
 
-== Checking for ==
+== Checking for update ==
 
 == Wrapping your application ==
