@@ -31,6 +31,7 @@ public class Main implements UpdateControllerListener {
     private static Logger logger = Logger.getLogger(Main.class);
     
     private Properties properties = null;
+    private String[] args = null;
     private UpdateManager updateManager = null;
     private ApplicationLauncher applicationLauncher;
     
@@ -40,6 +41,7 @@ public class Main implements UpdateControllerListener {
     }
     
     public void loadProperties(String[] args) throws Exception {
+        this.args = args;
         
         this.properties = new Properties();
         
@@ -105,7 +107,7 @@ public class Main implements UpdateControllerListener {
             jarFile = this.properties.getProperty(PROPERTY_JAR_FILE);
         }
         
-        this.applicationLauncher = new ApplicationLauncher(new File(jarFile), new String[0]);
+        this.applicationLauncher = new ApplicationLauncher(new File(jarFile), this.args);
     }
     
     /**
