@@ -19,7 +19,6 @@ import org.gdteam.appupdater4j.wrapper.ApplicationLauncher;
 public class Main implements UpdateControllerListener {
     
     //Possible system properties
-    public static final String SYSTEM_PROPERTY_FILE_KEY = "org.gdteam.appupdater4j.propertyfile";
     public static final String SYSTEM_JAR_FILE_KEY = "org.gdteam.appupdater4j.jarfile";
     
     //Properties which can be found in property file or in jar file
@@ -54,10 +53,11 @@ public class Main implements UpdateControllerListener {
         
         Properties userSpecifiedProperties = null;
         
-        //Check for -Dorg.gdteam.appupdater4j.propertyfile
-        if (System.getProperty(SYSTEM_PROPERTY_FILE_KEY) != null) {
+        //Check for propertyfile named appupdater4j.properties
+        File appUpdater4jPropertyFile = new File("appupdater4j.properties");
+        if (appUpdater4jPropertyFile.exists()) {
             userSpecifiedProperties = new Properties();
-            userSpecifiedProperties.load(new FileInputStream(System.getProperty(SYSTEM_PROPERTY_FILE_KEY)));
+            userSpecifiedProperties.load(new FileInputStream(appUpdater4jPropertyFile));
         } else {
             //No -Dorg.gdteam.appupdater4j.propertyfile
             //Check for properties in -Dorg.gdteam.appupdater4j.jarfile
