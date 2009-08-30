@@ -4,6 +4,8 @@
 
 This page provides everything you'll need to know about getting started with AppUpdater4J
 
+<wiki:toc max_depth="3" />
+
 == Creating update file ==
 
 == Checking for update ==
