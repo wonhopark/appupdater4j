@@ -12,13 +12,9 @@ The update file is a simple zip archive. The followed picture represents the con
 
 http://appupdater4j.googlecode.com/svn/trunk/AppUpdater4J/site/zip-structure.png
 
-=== Lib folder ===
-
-The lib folder contains ANT libraries. As AppUpdater runs ANT's targets, these 3 libraries are mandatory.
-
-You can find these libraries in you ANT_HOME directory or at this [http://code.google.com/p/appupdater4j/source/browse/#svn/trunk/AppUpdater4J/demo/ant/lib URL].
-
-=== update.properties ===
+||build.xml||||
+||update.properties||||
+||lib folder||contains ANT's libraries. As AppUpdater4J runs ANT's targets, these 3 libraries are mandatory. You can find them in you ANT_HOME directory or at this [http://code.google.com/p/appupdater4j/source/browse/#svn/trunk/AppUpdater4J/demo/ant/lib URL]||
 
 
 == Checking for update ==
