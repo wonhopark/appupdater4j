@@ -23,12 +23,12 @@ This page provides everything you'll need to know about getting started with App
         <tr>
             <td>http://appupdater4j.googlecode.com/svn/trunk/AppUpdater4J/site/tree_collapse_end.png</td>
             <td valign="top" >http://appupdater4j.googlecode.com/svn/trunk/AppUpdater4J/site/folder-16.png</td>
-            <td valign="top">lib</td>
+            <td valign="top" style="width:0%">lib</td>
         </tr>
         <tr>
             <td></td>
             <td>http://appupdater4j.googlecode.com/svn/trunk/AppUpdater4J/site/tree_split.png</td>
-            <td>http://appupdater4j.googlecode.com/svn/trunk/AppUpdater4J/site/document-16.png</td>
+            <td style="width:0%">http://appupdater4j.googlecode.com/svn/trunk/AppUpdater4J/site/document-16.png</td>
             <td align="left">ant.jar</td>
             <td></td>
         </tr>
