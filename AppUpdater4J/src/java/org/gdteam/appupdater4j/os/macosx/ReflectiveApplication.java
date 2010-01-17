@@ -15,9 +15,10 @@ public class ReflectiveApplication {
     public static final String HANDLE_QUIT = "handleQuit";
     
     private static final ReflectiveApplication instance = new ReflectiveApplication();
-    
 
     private Collection<ActionListener> applicationListeners = new ArrayList<ActionListener>();
+    
+    private boolean acceptQuitRequest = true;
     
     private ReflectiveApplication() {
         try {
@@ -101,17 +102,35 @@ public class ReflectiveApplication {
                 Class applicationEventClass = Class.forName("com.apple.eawt.ApplicationEvent");
                 Method setHandled = applicationEventClass.getMethod("setHandled", new Class[]{Boolean.TYPE});
                 
-                setHandled.invoke(applicationEvent, new Object[]{Boolean.TRUE});
+                setHandled.invoke(applicationEvent, new Object[]{isAcceptQuitRequest()});
                 
                 ActionEvent evt = new ActionEvent(ReflectiveApplication.this, Long.valueOf(System.currentTimeMillis()).intValue(), HANDLE_QUIT);
                 for (ActionListener listener : applicationListeners) {
                     listener.actionPerformed(evt);
                 }
+                
             }
             
-            return null;
+            return proxy;
             
         }
         
     }
+
+    /**
+     * Return true if ReflectiveApplication accepts the request to quit
+     * @return true if ReflectiveApplication accepts the request to quit
+     */
+	public boolean isAcceptQuitRequest() {
+		return acceptQuitRequest;
+	}
+
+	/**
+	 * Set to true if ReflectiveApplication accepts the request to quit
+	 * @param acceptQuitRequest true if ReflectiveApplication accepts the request to quit
+	 */
+	public void setAcceptQuitRequest(boolean acceptQuitRequest) {
+		this.acceptQuitRequest = acceptQuitRequest;
+	}
+   
 }

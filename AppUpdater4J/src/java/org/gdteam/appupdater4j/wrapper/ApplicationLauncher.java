@@ -59,7 +59,6 @@ public class ApplicationLauncher {
             throw new IllegalAccessException("Perform manifest extraction before calling run");
         }
         
-        
         //Create classloader
         //Do not use getParentFile due a NPE bugs
         File basedir = this.getParentFile(this.applicationJar);

@@ -1,8 +1,11 @@
 package org.gdteam.appupdater4j.wrapper;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+
+import org.gdteam.appupdater4j.os.macosx.ReflectiveApplication;
 
 public class WrappedRunnable implements Runnable {
 
@@ -16,11 +19,13 @@ public class WrappedRunnable implements Runnable {
 
     public void run() {
 
-        ClassLoader wrappedClassLoader = Thread.currentThread()
-                .getContextClassLoader();
+        ClassLoader wrappedClassLoader = Thread.currentThread().getContextClassLoader();
 
         try {
 
+        	//Load reflective application to avoid quit event problems
+        	this.loadReflectiveApplication(wrappedClassLoader);
+        	
             Class wrappedClass = wrappedClassLoader.loadClass(mainClass);
             Method main = null;
 
@@ -47,6 +52,24 @@ public class WrappedRunnable implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    /**
+     * Load ReflectiveApplication in wrapped class loader
+     * @param wrappedClassLoader
+     * @throws Exception
+     */
+    private void loadReflectiveApplication(ClassLoader wrappedClassLoader) throws Exception {
+    	Class reflectiveApplicationClass = wrappedClassLoader.loadClass(ReflectiveApplication.class.getName());
+    	Method getApplication = null;
+    	Method[] allMethods = reflectiveApplicationClass.getMethods();
+        for (Method method : allMethods) {
+            if (method.getName().equals("getApplication")) {
+            	getApplication = method;
+            }
+        }
+        
+        getApplication.invoke(null, new Object[0]);
     }
 
 }

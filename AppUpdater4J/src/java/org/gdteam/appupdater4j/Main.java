@@ -1,5 +1,7 @@
 package org.gdteam.appupdater4j;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -36,6 +38,19 @@ public class Main implements UpdateControllerListener {
     private ApplicationLauncher applicationLauncher;
     
     public Main() {
+
+    	ReflectiveApplication.getApplication().addApplicationListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//Quit application
+				if (ReflectiveApplication.HANDLE_QUIT.equals(e.getActionCommand()) && ReflectiveApplication.getApplication().isAcceptQuitRequest()) {
+					System.exit(0);
+				}
+			}
+		});
+    	
+    	
         //Configure log4j
         PropertyConfigurator.configure(this.getClass().getClassLoader().getResource("log4j.properties"));
     }
@@ -174,6 +189,8 @@ public class Main implements UpdateControllerListener {
         }
         try {
             this.applicationLauncher.run();
+            //Disable handle quit on reflective application 
+            ReflectiveApplication.getApplication().setAcceptQuitRequest(false);
         } catch (Exception e) {
             logger.error("Unable to start wrapped application", e);
             System.exit(0);
