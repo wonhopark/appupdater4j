@@ -1,6 +1,7 @@
 <project name="AppUpdater4J">
 	
 	<property name="jar.core.name" value="appupdater4j"/>
+	<property name="jar.core.version" value="1.0.0-beta"/>
 	
 	<target name="classpath-def">
 		<path id="compile.path">
@@ -70,6 +71,7 @@
         	<manifest >
 	            <attribute name="Built-By" value="GdTeam"/>
                 <attribute name="Main-Class" value="org.gdteam.appupdater4j.Main"/>
+        		<attribute name="AppUpdate4j-Version" value="${jar.core.version}"/>
             </manifest>
         </jar>
     </target>
