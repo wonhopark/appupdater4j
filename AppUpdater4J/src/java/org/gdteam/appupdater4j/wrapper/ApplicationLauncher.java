@@ -61,7 +61,8 @@ public class ApplicationLauncher {
         
         
         //Create classloader
-        File basedir = this.applicationJar.getParentFile();
+        //Do not use getParentFile due a NPE bugs
+        File basedir = this.getParentFile(this.applicationJar);
         
         URL[] classpathURLs = null;
         
@@ -101,7 +102,30 @@ public class ApplicationLauncher {
         
     }
 
-
+    /**
+     * Retrieve parent file
+     * @param child
+     * @return parent file
+     */
+    private File getParentFile(File child) {
+        if (child == null) {
+            return null;
+        }
+        
+        File ret = child.getParentFile();
+        
+        if (ret != null) {
+            return ret;
+        }
+        
+        String[] splitted = child.getAbsolutePath().split(System.getProperty("file.separator"));
+        
+        if (splitted.length > 1) {
+            return new File(splitted[splitted.length - 2]);
+        }
+        
+        return null;
+    }
 
     public void setJoinThread(boolean joinThread) {
         this.joinThread = joinThread;
