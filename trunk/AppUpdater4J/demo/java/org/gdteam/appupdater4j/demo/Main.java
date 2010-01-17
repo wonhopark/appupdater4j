@@ -6,8 +6,9 @@ import java.util.Properties;
 import javax.swing.JOptionPane;
 
 public class Main {
-
+	
     public static void main(String[] args) {
+    	
         Properties props = new Properties();
         try {
             props.load(Main.class.getClassLoader().getResourceAsStream("appupdater4j.cfg.properties"));
@@ -24,9 +25,9 @@ public class Main {
             
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+        	System.exit(0);
         }
-        
-        System.exit(0);
     }
     
 }
