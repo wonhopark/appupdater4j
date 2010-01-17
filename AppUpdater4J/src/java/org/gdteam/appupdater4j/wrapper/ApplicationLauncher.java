@@ -117,7 +117,7 @@ public class ApplicationLauncher {
             return ret;
         }
         
-        String[] splitted = child.getAbsolutePath().split(System.getProperty("file.separator"));
+        String[] splitted = child.getAbsolutePath().replace(System.getProperty("file.separator"), "/").split("/");
         
         if (splitted.length > 1) {
             return new File(splitted[splitted.length - 2]);
