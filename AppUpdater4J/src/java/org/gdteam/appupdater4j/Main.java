@@ -71,6 +71,11 @@ public class Main implements UpdateControllerListener {
                 }
 
                 userSpecifiedProperties = FileUtil.getPropertiesFromFileInZip(zip, "appupdater4j.cfg.properties");
+                
+                if (userSpecifiedProperties == null) {
+                    throw new Exception("Unable to find appupdater4j.cfg.properties in " + zip.getPath());
+                }
+                
                 userSpecifiedProperties.put(SYSTEM_JAR_FILE_KEY, zip.getPath());
                 
             } else {
