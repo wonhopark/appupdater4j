@@ -1,7 +1,7 @@
 <project name="AppUpdater4J">
 	
 	<property name="jar.core.name" value="appupdater4j"/>
-	<property name="jar.core.version" value="1.0.0"/>
+	<property name="jar.core.version" value="1.0.1"/>
 	
 	<target name="classpath-def">
 		<path id="compile.path">
