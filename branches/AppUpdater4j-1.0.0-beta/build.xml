@@ -1,0 +1,198 @@
+<project name="AppUpdater4J">
+	
+	<property name="jar.core.name" value="appupdater4j"/>
+	<property name="jar.core.version" value="1.0.0-beta"/>
+	
+	<target name="classpath-def">
+		<path id="compile.path">
+			<fileset dir="lib/compile">
+				<include name="*.jar"/>
+		    </fileset>
+		</path>
+		<path id="test.path">
+			<path refid="compile.path"/>
+            <fileset dir="lib/test">
+                <include name="*.jar"/>
+            </fileset>
+        </path>
+		<path id="demo.path">
+            <fileset dir="lib/demo">
+                <include name="*.jar"/>
+            </fileset>
+        </path>
+	</target>
+	
+	<target name="clean">
+		<delete dir="build"/>
+	</target>
+	
+    <target name="prepare">
+        <delete dir="build"/>
+    	<mkdir dir="build" />
+    	<mkdir dir="build/archives" />
+        <mkdir dir="build/classes" />
+    	<mkdir dir="build/test" />
+        <mkdir dir="build/test/classes" />
+    	<mkdir dir="build/demo" />
+    	<mkdir dir="build/demo/classes" />
+    	<mkdir dir="build/tmp" />
+    	<mkdir dir="build/tmp/junit" />
+    	<mkdir dir="build/report" />
+    	<mkdir dir="build/report/junit" />
+    	<mkdir dir="build/report/junit/xml" />
+    	<mkdir dir="build/report/junit/html" />
+    </target>
+
+	
+	<target name="compile" depends="classpath-def, prepare">
+		<javac destdir="build/classes" classpathref="compile.path" encoding="UTF-8" source="1.5" target="1.5" debug="true">
+		    <src path="src/java"/>
+	    </javac>
+		<copy todir="build/classes">
+			<fileset dir="src/conf">
+				<exclude name="**/.svn/**"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="build" depends="compile">
+        <!-- Explode lib files in tmp -->
+		<unzip dest="build/tmp/expanded">
+            <fileset dir="lib/compile">
+                <include name="*.jar"/>
+            </fileset>
+        </unzip>
+        
+        <!-- Create jar -->
+        <jar destfile="build/archives/${jar.core.name}.jar">
+            <fileset dir="build/classes">
+            </fileset>
+        	<fileset dir="build/tmp/expanded" />
+        	<manifest >
+	            <attribute name="Built-By" value="GdTeam"/>
+                <attribute name="Main-Class" value="org.gdteam.appupdater4j.Main"/>
+        		<attribute name="AppUpdate4j-Version" value="${jar.core.version}"/>
+            </manifest>
+        </jar>
+    </target>
+	
+	<target name="compile-test" depends="build">
+		<javac destdir="build/test/classes" encoding="UTF-8" source="1.5" target="1.5" debug="true">
+			<classpath>
+				<path refid="test.path"/>
+				<pathelement location="build/archives/${jar.core.name}.jar" />
+			</classpath>
+            <src path="test/java"/>
+        </javac>
+		<copy todir="build/test/classes">
+            <fileset dir="test/conf">
+                <exclude name="**/.svn/**"/>
+            </fileset>
+        </copy>
+	</target>
+	
+	<target name="build-test" depends="compile-test">
+		<jar destfile="build/archives/${jar.core.name}-test.jar">
+            <fileset dir="build/test/classes">
+            </fileset>
+        </jar>
+	</target>
+	
+	<target name="run-test" depends="build-test">
+		<junit printsummary="yes" showoutput="true" haltonfailure="no" fork="yes">
+            <sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura}/cobertura.ser" />
+            <classpath>
+              <path refid="test.path"/>
+              <pathelement location="${cobertura}/instr"/>
+              <pathelement path="build/archives/${jar.core.name}.jar"/>
+              <pathelement path="build/archives/${jar.core.name}-test.jar"/>
+            </classpath>
+            
+            <formatter type="xml"/>
+            
+            <batchtest fork="yes" todir="build/report/junit/xml">
+                <fileset dir="test/java">
+                    <include name="**/*Test.java"/>
+                </fileset>
+            </batchtest>
+            
+        </junit>
+        
+        <junitreport todir="build/tmp/junit">
+            <fileset dir="build/report/junit/xml">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="noframes" todir="build/report/junit/html"/>
+        </junitreport>
+	</target>
+	
+	<target name="compile-demo" depends="build">
+		<javac destdir="build/demo/classes" encoding="UTF-8" source="1.5" target="1.5" debug="true">
+            <classpath>
+                <path refid="demo.path"/>
+            </classpath>
+            <src path="demo/java"/>
+        </javac>
+        <copy todir="build/demo/classes">
+            <fileset dir="demo/conf">
+                <exclude name="**/.svn/**"/>
+            	<exclude name="feed.xml"/>
+            </fileset>
+        </copy>
+    </target>
+	
+	<target name="build-demo" depends="compile-demo">
+		
+		<jar destfile="build/archives/${jar.core.name}-demo.jar">
+            <fileset dir="build/demo/classes">
+            </fileset>
+			<manifest >
+                <attribute name="Built-By" value="GdTeam"/>
+                <attribute name="Main-Class" value="org.gdteam.appupdater4j.demo.Main"/>
+            </manifest>
+        </jar>
+		
+		<!-- Create updated demo jar -->
+		<copy file="demo/conf/appupdater4j.cfg.properties" tofile="build/tmp/appupdater4j.cfg.properties">
+	    </copy>
+		
+		<replaceregexp file="build/tmp/appupdater4j.cfg.properties"
+		               match="(application.version)=.*"
+		               replace="\1=2.0.0"/>
+		
+		<jar destfile="build/archives/${jar.core.name}-demo-updated.jar">
+            <fileset dir="build/demo/classes">
+            	<exclude name="appupdater4j.cfg.properties"/>
+            </fileset>
+            <fileset dir="build/tmp">
+            	<include name="appupdater4j.cfg.properties"/>
+            </fileset>
+			<manifest >
+                <attribute name="Built-By" value="GdTeam"/>
+                <attribute name="Main-Class" value="org.gdteam.appupdater4j.demo.Main"/>
+            </manifest>
+        </jar>
+		
+		<checksum file="demo/ant/update.properties" property="update.properties.md5"/>
+        <concat destfile="build/tmp/${update.properties.md5}.md5" append="false">${update.properties.md5}</concat>
+        
+        <zip destfile="build/tmp/antupdate.zip">
+            <fileset dir="demo/ant">
+                <exclude name="**/.svn/**"/>
+            </fileset>
+            <fileset dir="build/tmp">
+                <include name="${update.properties.md5}.md5"/>
+            </fileset>
+            <fileset dir="build/archives">
+                <include name="${jar.core.name}-demo-updated.jar"/>
+            </fileset>
+        </zip>
+		
+	</target>
+	
+	<target name="distrib" depends="build-demo">
+		<copy file="build/tmp/antupdate.zip" todir="dist/demo" />
+        <copy file="demo/conf/feed.xml" todir="dist/demo" />
+	</target>
+	
+</project>
