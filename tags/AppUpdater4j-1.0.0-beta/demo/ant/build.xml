@@ -1,0 +1,31 @@
+<project name="demo" default="backup">
+
+	<property name="installdir" value="${user.dir}" /> 
+	
+	<property file="${installdir}/update.properties" prefix="update"/>
+	<property name="tmpdir" value="${java.io.tmpdir}/${user.name}/${ant.project.name}" />
+	
+	<target name="backup">
+		<echo>Backup</echo>
+		<copy file="${installdir}/appupdater4j-demo.jar" tofile="${tmpdir}/appupdater4j-demo-bak.jar" />
+	</target>
+
+	<target name="install">
+		<echo>Install</echo>
+		<mkdir dir="${tmpdir}"/>
+		<!-- Copy demo jar located in update zip -->
+		
+		
+		<delete file="${installdir}/appupdater4j-demo.jar"/>
+		<copy file="${basedir}/appupdater4j-demo-updated.jar" tofile="${installdir}/appupdater4j-demo.jar" />
+		
+	</target>
+
+	<target name="restore">
+		<echo>Restore</echo>
+		<delete file="${installdir}/demo.jar" />
+		<copy file="${tmpdir}/appupdater4j-demo-bak.jar" tofile="${installdir}/appupdater4j-demo.jar" />
+	</target>
+
+
+</project>
