@@ -129,10 +129,10 @@ public class FileUtil {
             
             return null;
         } catch (ZipException ze) {
-            logger.error("Unable to get properties from file in zip", ze);
+            logger.error("Unable to get properties from file in file", ze);
             throw ze;
         } catch (IOException ioe) {
-            logger.error("Unable to get properties from file in zip", ioe);
+            logger.error("Unable to get properties from file in file", ioe);
             throw ioe;
         } finally {
             if (zipFile != null){
