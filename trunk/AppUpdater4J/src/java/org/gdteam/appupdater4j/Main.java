@@ -26,9 +26,11 @@ public class Main implements UpdateControllerListener {
     //Properties which can be found in property file or in jar file
     public static final String PROPERTY_JAR_FILE = "jar.file";
     public static final String PROPERTY_DOCK_ICON_PATH = "dockicon.path";
+    public static final String PROPERTY_DOCK_ICON_APP_ICNS = "appicns";
     public static final String PROPERTY_DIALOG_CLASS = "dialog.class";
     public static final String PROPERTY_DIALOG_TITLE = "dialog.title";
     public static final String PROPERTY_UPDATE_MODE = "update.mode";    
+    
     
     private static Logger logger = Logger.getLogger(Main.class);
     
@@ -108,11 +110,13 @@ public class Main implements UpdateControllerListener {
         
         //Configure dock icon
         String dockIconPath = this.properties.getProperty(PROPERTY_DOCK_ICON_PATH);
-        if (dockIconPath == null) {
-            ReflectiveApplication.getApplication().setDockIconImage(new ImageIcon(this.getClass().getClassLoader().getResource("refresh-128.png")).getImage());
-        } else  {
-            ReflectiveApplication.getApplication().setDockIconImage(new ImageIcon(dockIconPath).getImage());
+        
+        if (dockIconPath == null ) {
+        	ReflectiveApplication.getApplication().setDockIconImage(new ImageIcon(this.getClass().getClassLoader().getResource("refresh-128.png")).getImage());
+        } else if (!PROPERTY_DOCK_ICON_APP_ICNS.equals(dockIconPath)) {
+        	ReflectiveApplication.getApplication().setDockIconImage(new ImageIcon(dockIconPath).getImage());
         }
+        
     }
     
     public void configureUpdateManager() {
