@@ -82,7 +82,7 @@
         	<manifest >
 	            <attribute name="Built-By" value="GdTeam"/>
                 <attribute name="Main-Class" value="org.gdteam.appupdater4j.Main"/>
-        		<attribute name="AppUpdate4j-Version" value="${jar.core.version}"/>
+        		<attribute name="AppUpdater4j-Version" value="${jar.core.version}"/>
             </manifest>
         </jar>
     </target>
