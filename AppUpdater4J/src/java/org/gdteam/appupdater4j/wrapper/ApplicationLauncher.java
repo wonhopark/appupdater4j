@@ -63,31 +63,16 @@ public class ApplicationLauncher {
         //Do not use getParentFile due a NPE bugs
         File basedir = this.getParentFile(this.applicationJar);
         
-        URL[] classpathURLs = null;
-        
-        if (this.classpath == null) {
-            classpathURLs = new URL[1];
-        } else {
-            String[] classpathJars = this.classpath.split(" ");
-            classpathURLs = new URL[classpathJars.length + 1];
-            
-            for (int i = 0; i < classpathJars.length; i++) {
-                try {
-                    classpathURLs[i] = new File(basedir.getPath() + System.getProperty("file.separator") + classpathJars[i]).toURL();
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        URL[] classpathURLs = new URL[1];
         
         try {
-            classpathURLs[classpathURLs.length - 1] = this.applicationJar.toURL();
-        } catch (MalformedURLException e1) {
-            e1.printStackTrace();
-        }
+			classpathURLs[classpathURLs.length - 1] = this.applicationJar.toURL();
+		} catch (MalformedURLException e1) {
+			e1.printStackTrace();
+		}        
         
-        URLClassLoader classLoader = new URLClassLoader(classpathURLs, this.getClass().getClassLoader().getParent());
-        
+        URLClassLoader classLoader = new URLClassLoader(classpathURLs, null);
+
         Wrapper wrapper = new Wrapper(classLoader, this.mainClass, this.args);
         wrapper.start();
         
@@ -120,7 +105,14 @@ public class ApplicationLauncher {
         String[] splitted = child.getAbsolutePath().replace(System.getProperty("file.separator"), "/").split("/");
         
         if (splitted.length > 1) {
-            return new File(splitted[splitted.length - 2]);
+        	
+        	StringBuilder absolutePath = new StringBuilder();
+        	
+        	for(int i=0;i<splitted.length - 1;i++) {
+        		absolutePath.append(splitted[i]).append("/");
+        	}
+        	
+            return new File(absolutePath.toString());
         }
         
         return null;
