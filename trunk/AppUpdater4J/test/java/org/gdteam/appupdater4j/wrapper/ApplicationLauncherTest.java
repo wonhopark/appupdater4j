@@ -31,7 +31,7 @@ public class ApplicationLauncherTest {
         launcher.setJoinThread(true);
         
         try {
-            launcher.extractManifestInfo();
+            launcher.extractManifestInfoAndListFiles();
             launcher.run();
         } catch (Exception e) {
             Assert.fail(e.getMessage());

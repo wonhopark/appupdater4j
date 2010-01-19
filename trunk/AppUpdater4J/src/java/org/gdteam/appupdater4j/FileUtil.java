@@ -145,5 +145,23 @@ public class FileUtil {
             
         }
     }
+    
+    /**
+     * Delete file/directory even if directory is not empty
+     * @param file file to delete
+     */
+    public static void deleteFile(File file) {
+    	if (file == null && !file.exists()) {
+    		return;
+    	}
+    	
+    	if (file.isFile()) {
+    		file.delete();
+    	} else if (file.isDirectory()) {
+			for (File child : file.listFiles()) {
+				FileUtil.deleteFile(child);
+			}
+		}
+    }
 
 }

@@ -185,7 +185,7 @@ public class Main implements UpdateControllerListener {
     public void runApplication() {
         logger.info("Run wrapped application");
         try {
-            this.applicationLauncher.extractManifestInfo();
+            this.applicationLauncher.extractManifestInfoAndListFiles();
             
         } catch (Exception e) {
             logger.error("Unable to extract data form jar manifest", e);

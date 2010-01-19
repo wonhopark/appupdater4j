@@ -22,9 +22,13 @@ public class WrappedRunnable implements Runnable {
         ClassLoader wrappedClassLoader = Thread.currentThread().getContextClassLoader();
 
         try {
-
+        	
         	//Load reflective application to avoid quit event problems
-        	this.loadReflectiveApplication(wrappedClassLoader);
+        	try {
+        		this.loadReflectiveApplication(wrappedClassLoader);
+        	} catch (Exception e) {
+				e.printStackTrace();
+			}
         	
             Class wrappedClass = wrappedClassLoader.loadClass(mainClass);
             Method main = null;
@@ -40,8 +44,7 @@ public class WrappedRunnable implements Runnable {
 
             main.invoke(null, newargs);
         } catch (ClassNotFoundException e) {
-            StringBuilder userMessage = new StringBuilder("Cannot find ")
-                    .append(mainClass).append(" in :\n");
+            StringBuilder userMessage = new StringBuilder("Cannot find ").append(mainClass).append(" in :\n");
             URLClassLoader urlClassLoader = (URLClassLoader) wrappedClassLoader;
 
             for (URL url : urlClassLoader.getURLs()) {

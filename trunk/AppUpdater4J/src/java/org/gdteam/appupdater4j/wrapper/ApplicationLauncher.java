@@ -5,16 +5,22 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.gdteam.appupdater4j.FileUtil;
+
 public class ApplicationLauncher {
-    
+	
     private String mainClass;
-    private String classpath;
+    private String manifestClasspath;
+    
     private File applicationJar;
+    
     private String[] args;
     private boolean joinThread = false;;
 
@@ -23,7 +29,7 @@ public class ApplicationLauncher {
         this.args = args;
     }
     
-    public void extractManifestInfo() throws Exception {
+    public void extractManifestInfoAndListFiles() throws Exception {
         ZipFile zipFile = null;
         try {
             zipFile = new ZipFile(this.applicationJar);
@@ -35,7 +41,7 @@ public class ApplicationLauncher {
                     if (entry.getName().equalsIgnoreCase("meta-inf/manifest.mf")) {
                         Manifest manifest = new Manifest(zipFile.getInputStream(entry));
                         mainClass = manifest.getMainAttributes().getValue("Main-Class");
-                        classpath = manifest.getMainAttributes().getValue("Class-Path");
+                        manifestClasspath = manifest.getMainAttributes().getValue("Class-Path");
                     }
                 }
             }
@@ -63,16 +69,38 @@ public class ApplicationLauncher {
         //Do not use getParentFile due a NPE bugs
         File basedir = this.getParentFile(this.applicationJar);
         
-        URL[] classpathURLs = new URL[1];
+        List<URL> classpathURLs = new ArrayList<URL>();
+        
+        if (this.manifestClasspath != null) {
+        	String[] classpathJars = this.manifestClasspath.split(" ");
+            
+            for (int i = 0; i < classpathJars.length; i++) {
+                try {
+                	classpathURLs.add(new File(basedir.getPath() + System.getProperty("file.separator") + classpathJars[i]).toURL());
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        
+        //Extracts files of application jar to add in classpath
+        File applicationJarDir = new File(System.getProperty("java.io.tmpdir") + "/gdteam-cp/");
+        
+        //Clean directory
+        FileUtil.deleteFile(applicationJarDir);
+        applicationJarDir.mkdirs();
         
         try {
-			classpathURLs[classpathURLs.length - 1] = this.applicationJar.toURL();
-		} catch (MalformedURLException e1) {
+			FileUtil.unzipFile(applicationJar, applicationJarDir.getAbsolutePath() + "/");
+			new File(applicationJarDir, "META-INF/MANIFEST.MF").delete();
+	        
+	        classpathURLs.add(applicationJarDir.toURL());
+		} catch (Exception e1) {
 			e1.printStackTrace();
-		}        
+		}
         
-        URLClassLoader classLoader = new URLClassLoader(classpathURLs, null);
-
+        URLClassLoader classLoader = new URLClassLoader(classpathURLs.toArray(new URL[0]), this.getClass().getClassLoader().getParent());
+        
         Wrapper wrapper = new Wrapper(classLoader, this.mainClass, this.args);
         wrapper.start();
         
@@ -105,14 +133,7 @@ public class ApplicationLauncher {
         String[] splitted = child.getAbsolutePath().replace(System.getProperty("file.separator"), "/").split("/");
         
         if (splitted.length > 1) {
-        	
-        	StringBuilder absolutePath = new StringBuilder();
-        	
-        	for(int i=0;i<splitted.length - 1;i++) {
-        		absolutePath.append(splitted[i]).append("/");
-        	}
-        	
-            return new File(absolutePath.toString());
+            return new File(splitted[splitted.length - 2]);
         }
         
         return null;
