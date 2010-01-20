@@ -84,7 +84,7 @@ public class ApplicationLauncher {
         }
         
         //Extracts files of application jar to add in classpath
-        File applicationJarDir = new File(System.getProperty("java.io.tmpdir") + "/gdteam-cp/");
+        File applicationJarDir = new File(System.getProperty("java.io.tmpdir") + "/gdteam-cp-" + applicationJar.getName() + "/");
         
         //Clean directory
         FileUtil.deleteFile(applicationJarDir);
@@ -133,7 +133,13 @@ public class ApplicationLauncher {
         String[] splitted = child.getAbsolutePath().replace(System.getProperty("file.separator"), "/").split("/");
         
         if (splitted.length > 1) {
-            return new File(splitted[splitted.length - 2]);
+            StringBuilder absolutePath = new StringBuilder();
+        	
+        	for(int i=0;i<splitted.length - 1;i++) {
+        		absolutePath.append(splitted[i]).append("/");
+        	}
+        	
+            return new File(absolutePath.toString());
         }
         
         return null;
