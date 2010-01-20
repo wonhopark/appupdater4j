@@ -161,6 +161,7 @@ public class FileUtil {
 			for (File child : file.listFiles()) {
 				FileUtil.deleteFile(child);
 			}
+			file.delete();
 		}
     }
 
